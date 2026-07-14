@@ -1,44 +1,33 @@
-# YouTube History Analyzer
+# Playback Stats
 
-<a href="https://www.producthunt.com/posts/yt-history?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-yt&#0045;history" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=541313&theme=light" alt="yt&#0045;history - Illuminate&#0032;Your&#0032;Viewing&#0032;Journey | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+<a href="https://www.producthunt.com/posts/yt-history?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-yt&#0045;history" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=541313&theme=light" alt="Playback Stats on Product Hunt" width="250" height="54" /></a>
 
-A web application that allows users to visualize and analyze their YouTube watch history.
+A privacy-first web app for exploring your YouTube watch history and Spotify listening history. Files are analyzed locally in your browser and are never uploaded.
+
+[Try Playback Stats](https://playbackstats.com)
 
 ## Features
 
-- Import YouTube history data from Google Takeout
-- Visualize watching patterns and trends
-- Filter and search through watch history
-- Generate insights about most-watched channels and categories
-- Track time spent watching different types of content
+- YouTube viewing trends, top channels, repeat videos, streaks, and habits
+- Spotify listening time, top artists and tracks, trends, and playback behavior
+- Google Takeout and Spotify streaming-history JSON support
+- Private, browser-only processing with no account connection or API key
 
-## Installation
+## Run locally
 
 ```bash
-# Clone the repository
 git clone https://github.com/ronething/yt-history.git
 cd yt-history
-
-# Install dependencies
 pnpm install
-
-# Start the development server
 pnpm dev
 ```
 
-## Usage
+Open [http://localhost:3000](http://localhost:3000), then import a supported history export.
 
-1. Export your YouTube history data from [Google Takeout](https://takeout.google.com/)
-2. Import the JSON file into the application
-3. Explore your personalized YouTube analytics dashboard
+## Tech stack
 
-## Technologies
+Next.js, React, TypeScript, Tailwind CSS, and Recharts.
 
-- Frontend: React/Next.js
-- Styling: Tailwind CSS
-- Data Visualization: Recharts
-- State Management: React Context API
+## Preview
 
-## Effect
-
-![youtube-history](images/readme.webp)
+![Playback Stats YouTube dashboard](images/readme.webp)
