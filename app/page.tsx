@@ -18,23 +18,23 @@ import PlaybackHeader from "@/components/playback-header"
 import { Button } from "@/components/ui/button"
 
 export const metadata: Metadata = {
-  title: "YouTube History Analyzer | Private Viewing Stats",
+  title: "YouTube Watch History Analyzer & Stats | Playback Stats",
   description:
-    "Analyze your YouTube watch history locally. Explore viewing trends, channels, repeat watches, and personal patterns without uploading your data.",
+    "Upload Google Takeout watch-history.json to analyze YouTube watch history, viewing stats, top channels, streaks, and trends—privately in your browser.",
   alternates: {
     canonical: "https://playbackstats.com/",
   },
   openGraph: {
     type: "website",
     url: "https://playbackstats.com/",
-    title: "YouTube History Analyzer | Private Viewing Stats",
-    description: "Turn your YouTube watch history into private charts and viewing insights — all in your browser.",
+    title: "YouTube Watch History Analyzer & Stats | Playback Stats",
+    description: "Analyze your YouTube watch history from Google Takeout with private viewing stats, channel rankings, streaks, and trends.",
     siteName: "Playback Stats",
   },
   twitter: {
     card: "summary_large_image",
-    title: "YouTube History Analyzer | Private Viewing Stats",
-    description: "Private, local YouTube history analysis with charts, rankings, and personal insights.",
+    title: "YouTube Watch History Analyzer & Stats | Playback Stats",
+    description: "Analyze your YouTube watch history from Google Takeout with private viewing stats, channel rankings, streaks, and trends.",
   },
   robots: {
     index: true,
@@ -191,13 +191,13 @@ export default function Home() {
               </div>
 
               <h1 className="mt-7 text-balance text-4xl font-bold tracking-[-0.04em] text-white sm:text-5xl lg:text-6xl">
-                See the story behind your{" "}
+                Analyze your{" "}
                 <span className="bg-gradient-to-r from-red-400 via-red-300 to-rose-400 bg-clip-text text-transparent">
-                  YouTube history
+                  YouTube watch history
                 </span>
               </h1>
               <p className="mt-6 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
-                Turn your Google Takeout watch history into a private, interactive look at the creators, routines, and repeat favorites that shaped your time.
+                Upload your Google Takeout watch-history.json to explore viewing stats, top channels, routines, and repeat favorites without sending the file to a server.
               </p>
 
               <div className="mt-9 grid gap-3 sm:grid-cols-3">
@@ -232,9 +232,9 @@ export default function Home() {
           <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-red-300">Inside your history</p>
-              <h2 id="discover-title" className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">More than a watch count</h2>
+              <h2 id="discover-title" className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">YouTube watch history stats, with context</h2>
               <p className="mt-4 text-base leading-7 text-zinc-400">
-                Your export is a timeline. Playback Stats turns it into context you can scan, compare, and understand.
+                This YouTube history analyzer turns your export into patterns you can scan, compare, and understand.
               </p>
             </div>
 
@@ -318,7 +318,7 @@ export default function Home() {
           <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
             <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-red-300">Good to know</p>
-              <h2 id="youtube-faq-title" className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">Before you analyze</h2>
+              <h2 id="youtube-faq-title" className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">YouTube history analyzer FAQ</h2>
             </div>
             <div className="mt-10 grid gap-x-10 gap-y-8 md:grid-cols-2">
               {faqs.map((faq) => (

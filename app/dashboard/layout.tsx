@@ -13,8 +13,9 @@ export const metadata: Metadata = {
     title: "YouTube Dashboard | Playback Stats",
     description: "Explore private insights and charts generated from your local YouTube watch history export.",
   },
-  alternates: {
-    canonical: "https://playbackstats.com/dashboard",
+  robots: {
+    index: false,
+    follow: false,
   },
 }
 
