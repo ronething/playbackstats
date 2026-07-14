@@ -1,20 +1,20 @@
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
 import { Metadata } from "next"
 
-import { Button } from "@/components/ui/button"
+import PlaybackFooter from "@/components/playback-footer"
+import PlaybackHeader from "@/components/playback-header"
 
 export const metadata: Metadata = {
-  title: "Terms of Service | YouTube History Visualizer",
-  description: "Terms of service and usage conditions for the YouTube History Visualizer tool.",
+  title: "Terms of Service | Playback Stats",
+  description: "Terms of service and usage conditions for Playback Stats.",
   openGraph: {
-    title: "Terms of Service | YouTube History Visualizer",
-    description: "Terms of service and usage conditions for the YouTube History Visualizer tool.",
+    title: "Terms of Service | Playback Stats",
+    description: "Terms of service and usage conditions for Playback Stats.",
     url: "https://playbackstats.com/terms",
   },
   twitter: {
-    title: "Terms of Service | YouTube History Visualizer",
-    description: "Terms of service and usage conditions for the YouTube History Visualizer tool.",
+    title: "Terms of Service | Playback Stats",
+    description: "Terms of service and usage conditions for Playback Stats.",
   },
   alternates: {
     canonical: "https://playbackstats.com/terms",
@@ -23,33 +23,21 @@ export const metadata: Metadata = {
 
 export default function TermsOfService() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <header className="border-b">
-        <div className="container mx-auto flex h-16 items-center px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold">YouTube History Visualizer</h1>
-          </Link>
-          <nav className="ml-auto flex gap-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/" className="flex items-center gap-1">
-                <ArrowLeft className="h-4 w-4" /> Back to Home
-              </Link>
-            </Button>
-          </nav>
-        </div>
-      </header>
-      <main className="flex-1">
-        <div className="container mx-auto py-12 px-4 md:px-6">
-          <div className="max-w-3xl mx-auto space-y-8">
+    <div className="dark flex min-h-screen flex-col bg-zinc-950 text-white">
+      <PlaybackHeader />
+      <main id="main-content" className="flex-1">
+        <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+          <article className="mx-auto max-w-3xl space-y-10 text-sm leading-7 text-zinc-300 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-white [&_li]:pl-1 [&_strong]:font-semibold [&_strong]:text-white sm:text-base">
             <div>
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-4">Terms of Service</h1>
-              <p className="text-gray-500">Last Updated: {new Date().toLocaleDateString()}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">Playback Stats</p>
+              <h1 className="mt-4 text-4xl font-bold tracking-[-0.04em] text-white sm:text-5xl">Terms of Service</h1>
+              <p className="mt-4 text-sm text-zinc-500">Last updated: {new Date().toLocaleDateString()}</p>
             </div>
 
             <section className="space-y-4">
               <h2 className="text-2xl font-bold">1. Introduction</h2>
               <p>
-                Welcome to YouTube History Visualizer. By accessing or using our website, you agree to be bound by
+                Welcome to Playback Stats. By accessing or using our website, you agree to be bound by
                 these Terms of Service. If you do not agree to these terms, please do not use our service.
               </p>
             </section>
@@ -57,9 +45,8 @@ export default function TermsOfService() {
             <section className="space-y-4">
               <h2 className="text-2xl font-bold">2. Description of Service</h2>
               <p>
-                YouTube History Visualizer provides a tool for users to visualize their YouTube watch history data.
-                The service processes the data locally in the user&apos;s browser to generate visualizations and
-                insights about their YouTube viewing habits.
+                Playback Stats provides tools for users to visualize supported YouTube and Spotify history data. The
+                service processes history files locally in the user&apos;s browser to generate visualizations and insights.
               </p>
             </section>
 
@@ -67,7 +54,7 @@ export default function TermsOfService() {
               <h2 className="text-2xl font-bold">3. User Responsibilities</h2>
               <p>By using our service, you agree to:</p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Provide your own YouTube history data for processing</li>
+                <li>Provide only history data that you are authorized to process</li>
                 <li>Use the service only for personal, non-commercial purposes</li>
                 <li>Not attempt to reverse engineer, modify, or manipulate the service</li>
                 <li>Not use the service to violate any laws or regulations</li>
@@ -81,9 +68,8 @@ export default function TermsOfService() {
             <section className="space-y-4">
               <h2 className="text-2xl font-bold">4. Intellectual Property</h2>
               <p>
-                All content, features, and functionality of YouTube History Visualizer, including but not limited to
-                text, graphics, logos, icons, and software code, are the exclusive property of YouTube History
-                Visualizer and are protected by copyright, trademark, and other intellectual property laws.
+                All content, features, and functionality of Playback Stats are subject to applicable copyright,
+                trademark, open-source licenses, and other intellectual property laws.
               </p>
               <p>
                 You are granted a limited, non-exclusive, non-transferable license to use the service for personal,
@@ -94,7 +80,7 @@ export default function TermsOfService() {
             <section className="space-y-4">
               <h2 className="text-2xl font-bold">5. Disclaimer of Warranties</h2>
               <p>
-                YouTube History Visualizer is provided &quot;as is&quot; and &quot;as available&quot; without any
+                Playback Stats is provided &quot;as is&quot; and &quot;as available&quot; without any
                 warranties of any kind, either express or implied. We do not guarantee that:
               </p>
               <ul className="list-disc pl-6 space-y-2">
@@ -108,7 +94,7 @@ export default function TermsOfService() {
             <section className="space-y-4">
               <h2 className="text-2xl font-bold">6. Limitation of Liability</h2>
               <p>
-                In no event shall YouTube History Visualizer, its directors, employees, partners, agents, suppliers, or
+                In no event shall Playback Stats, its directors, employees, partners, agents, suppliers, or
                 affiliates be liable for any indirect, incidental, special, consequential, or punitive damages,
                 including without limitation, loss of profits, data, use, goodwill, or other intangible losses,
                 resulting from:
@@ -124,9 +110,9 @@ export default function TermsOfService() {
             <section className="space-y-4">
               <h2 className="text-2xl font-bold">7. Data Usage and Privacy</h2>
               <p>
-                We process your YouTube history data entirely in your browser. We do not collect, store, or transmit
-                any of your personal data. For more information, please refer to our{" "}
-                <Link href="/privacy" className="text-primary hover:underline">
+                We process supported history files entirely in your browser and do not collect, store, or transmit
+                their contents or generated insights. Limited aggregate site analytics are described in our{" "}
+                <Link href="/privacy" className="font-medium text-white underline decoration-white/30 underline-offset-4 hover:decoration-white">
                   Privacy Policy
                 </Link>
                 .
@@ -166,24 +152,10 @@ export default function TermsOfService() {
                 support@playbackstats.com
               </p>
             </section>
-          </div>
+          </article>
         </div>
       </main>
-      <footer className="border-t py-6">
-        <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-sm leading-loose text-gray-500 md:text-left">
-            © {new Date().getFullYear()} YouTube History Visualizer. All rights reserved.
-          </p>
-          <div className="flex items-center gap-4">
-            <Link href="/privacy" className="text-sm text-gray-500 hover:underline">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="text-sm text-gray-500 hover:underline">
-              Terms of Service
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <PlaybackFooter />
     </div>
   )
-} 
+}

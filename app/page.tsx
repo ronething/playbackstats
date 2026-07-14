@@ -1,28 +1,40 @@
+import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowRight, BarChart2, Clock, Star, Upload, Shield, Zap, Github } from "lucide-react"
-import { Metadata } from "next"
+import {
+  ArrowUpRight,
+  BarChart3,
+  CalendarDays,
+  Clock3,
+  History,
+  Repeat2,
+  ShieldCheck,
+  Sparkles,
+  Users,
+} from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import FileUploadForm from "@/components/file-upload-form"
+import PlaybackFooter from "@/components/playback-footer"
+import PlaybackHeader from "@/components/playback-header"
+import { Button } from "@/components/ui/button"
 
 export const metadata: Metadata = {
-  title: "YouTube History Visualizer | Analyze Your Viewing Habits",
-  description: "Upload your YouTube watch history and get personalized insights into your viewing patterns. No login required, your data never leaves your browser.",
+  title: "YouTube Watch History Analyzer & Stats | Playback Stats",
+  description:
+    "Upload Google Takeout watch-history.json to analyze YouTube watch history, viewing stats, top channels, streaks, and trends—privately in your browser.",
+  alternates: {
+    canonical: "https://playbackstats.com/",
+  },
   openGraph: {
     type: "website",
     url: "https://playbackstats.com/",
-    title: "YouTube History Visualizer | Analyze Your Viewing Habits",
-    description: "Upload your YouTube watch history and get personalized insights into your viewing patterns. No login required, your data never leaves your browser.",
-    siteName: "YouTube History Visualizer",
+    title: "YouTube Watch History Analyzer & Stats | Playback Stats",
+    description: "Analyze your YouTube watch history from Google Takeout with private viewing stats, channel rankings, streaks, and trends.",
+    siteName: "Playback Stats",
   },
   twitter: {
     card: "summary_large_image",
-    title: "YouTube History Visualizer | Analyze Your Viewing Habits",
-    description: "Upload your YouTube watch history and get personalized insights into your viewing patterns. No login required, your data never leaves your browser.",
-  },
-  alternates: {
-    canonical: "https://playbackstats.com/",
+    title: "YouTube Watch History Analyzer & Stats | Playback Stats",
+    description: "Analyze your YouTube watch history from Google Takeout with private viewing stats, channel rankings, streaks, and trends.",
   },
   robots: {
     index: true,
@@ -30,351 +42,299 @@ export const metadata: Metadata = {
   },
 }
 
-const features = [
+const promises = [
+  { icon: CalendarDays, label: "Your timeline", detail: "Daily activity across your export" },
+  { icon: Users, label: "Your channels", detail: "Creators ranked by repeat views" },
+  { icon: Clock3, label: "Your rhythm", detail: "Hours, streaks, and viewing habits" },
+]
+
+const discoveries = [
   {
-    icon: BarChart2,
-    title: "Viewing Trends",
-    description: "See how your viewing habits change over time",
-    detail: "Visualize daily, weekly, and monthly viewing patterns with interactive charts.",
-    gradient: "from-red-500 to-orange-500",
+    icon: BarChart3,
+    title: "Viewing trends",
+    description: "Follow how your viewing changes over days, months, and the full life of your Google history.",
   },
   {
-    icon: Clock,
-    title: "Watch Time Analysis",
-    description: "Understand when you watch the most",
-    detail: "Discover your peak viewing hours and how your habits have evolved over time.",
-    gradient: "from-orange-500 to-yellow-500",
+    icon: Repeat2,
+    title: "Repeat favorites",
+    description: "Find the videos and channels you returned to, with rankings grounded in your own history.",
   },
   {
-    icon: Shield,
-    title: "Private & Secure",
-    description: "Your data stays on your device",
-    detail: "All processing happens in your browser. We never store or transmit your watch history.",
-    gradient: "from-purple-500 to-pink-500",
+    icon: Sparkles,
+    title: "Personal patterns",
+    description: "See your peak hour, favorite day, longest streak, and the shape of your viewing personality.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Private by design",
+    description: "The browser keeps only compact chart data. Your original Takeout file never reaches a server.",
   },
 ]
 
-const steps = [
-  { number: 1, title: "Export Your Data", description: "Download your watch history from Google Takeout" },
-  { number: 2, title: "Upload the File", description: "Drop your watch-history.json file into our tool" },
-  { number: 3, title: "Explore Insights", description: "View interactive charts and discover your viewing patterns" },
+const analysisDetails = [
+  {
+    title: "Viewing activity",
+    description:
+      "Count watch events by day, month, weekday, and hour to see when your YouTube activity rises or falls.",
+  },
+  {
+    title: "Videos and channels",
+    description:
+      "Rank repeat videos, compare channel frequency, and measure how concentrated or varied your viewing history is.",
+  },
+  {
+    title: "Habits over time",
+    description:
+      "Find your first recorded video, busiest day, peak viewing hour, favorite weekday, and longest active streak.",
+  },
+]
+
+const exportSteps = [
+  {
+    title: "Open Google Takeout",
+    description: "Sign in, deselect everything, then choose YouTube and YouTube Music.",
+  },
+  {
+    title: "Keep history only",
+    description: "Open the included-data options and leave only history selected before creating the export.",
+  },
+  {
+    title: "Find the JSON file",
+    description: "Unzip the download and locate history/watch-history.json inside the YouTube folder.",
+  },
+  {
+    title: "Explore locally",
+    description: "Choose that JSON file here. Parsing and analysis run inside this browser tab.",
+  },
 ]
 
 const faqs = [
   {
-    question: "Is my data secure?",
-    answer: "Yes, all processing happens directly in your browser. We never store, transmit, or have access to your watch history data.",
+    question: "Does my YouTube history get uploaded?",
+    answer: "No. The file is read and summarized locally in your browser. Playback Stats has no upload endpoint for history files.",
   },
   {
-    question: "Do I need to create an account?",
-    answer: "No, this tool is completely account-free. Simply upload your watch history file and start exploring your data.",
+    question: "Do I need a Google or Playback Stats login?",
+    answer: "No. Export the file from Google Takeout, then analyze it without connecting an account or API key.",
   },
   {
-    question: "How far back does the data go?",
-    answer: "The data goes back as far as your Google account has been tracking your YouTube watch history. For many users, this could be several years.",
+    question: "How far back will the dashboard go?",
+    answer: "As far back as the valid watch records in your export. The available range depends on your Google history settings.",
   },
   {
-    question: "Can I save my visualizations?",
-    answer: "Yes, you can download or screenshot the charts and insights from the dashboard after uploading your data.",
+    question: "What happens when I refresh?",
+    answer: "The original file is never retained. Compact YouTube dashboard data stays only in this browser session and can be cleared by closing it.",
+  },
+  {
+    question: "Can this calculate my total YouTube watch time?",
+    answer:
+      "No. Google Takeout watch history records when a video was watched, but it does not provide reliable minutes watched for each event. Playback Stats reports viewing activity rather than inventing a watch-time estimate.",
+  },
+  {
+    question: "Why might the totals differ from YouTube itself?",
+    answer:
+      "The analyzer can only count valid records present in the exported JSON. Deleted history, paused history, private or unavailable videos, and changes to your Google activity settings can affect what the export contains.",
   },
 ]
 
+function AnalysisMethod() {
+  return (
+    <article
+      aria-labelledby="youtube-analysis-method-title"
+      className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-zinc-950/80 p-6 shadow-2xl shadow-black/40 backdrop-blur-xl sm:p-8"
+    >
+      <div className="max-w-3xl">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-red-300">How the analysis works</p>
+        <h3 id="youtube-analysis-method-title" className="mt-4 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+          What this YouTube history analyzer measures
+        </h3>
+        <p className="mt-4 text-sm leading-7 text-zinc-400 sm:text-base">
+          Google Takeout&apos;s <code className="font-mono text-red-200">watch-history.json</code> is a chronological list of viewing events. Playback Stats reads each valid video title, channel, and timestamp, then groups those records into useful comparisons without contacting YouTube or Google.
+        </p>
+      </div>
+
+      <dl className="mt-8 grid gap-3 md:grid-cols-3">
+        {analysisDetails.map((item) => (
+          <div key={item.title} className="rounded-2xl bg-white/[0.04] p-5 ring-1 ring-inset ring-white/[0.06]">
+            <dt className="font-semibold text-white">{item.title}</dt>
+            <dd className="mt-2 text-sm leading-6 text-zinc-400">{item.description}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <div className="mt-4 rounded-2xl border border-amber-300/15 bg-amber-300/[0.06] p-5">
+        <p className="text-sm font-semibold text-amber-100">A deliberate limitation</p>
+        <p className="mt-2 text-sm leading-6 text-zinc-400">
+          YouTube&apos;s export does not include dependable watch duration for each history event. The dashboard therefore reports views and viewing patterns, not a made-up total watch-time number.
+        </p>
+      </div>
+    </article>
+  )
+}
+
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto flex h-16 items-center px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center">
-              <Zap className="h-4 w-4 text-white" />
-            </div>
-            <h1 className="text-lg font-bold">YouTube History Visualizer</h1>
-          </div>
-          <nav className="ml-auto flex items-center gap-6">
-            <Link href="#how-it-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              How It Works
-            </Link>
-            <Link href="#faq" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              FAQ
-            </Link>
-            <Link 
-              href="https://github.com/ronething/yt-history" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/50 hover:bg-muted text-sm font-medium transition-colors"
-            >
-              <Github className="h-4 w-4" />
-              GitHub
-            </Link>
-          </nav>
-        </div>
-      </header>
+    <div className="dark min-h-screen bg-zinc-950 text-white">
+      <PlaybackHeader activePlatform="youtube" guideHref="#how-to-export" />
 
-      <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative w-full py-20 md:py-32 overflow-hidden">
-          {/* Background decoration */}
-          <div className="absolute inset-0 gradient-bg" />
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl" />
-          
-          <div className="container relative mx-auto px-4 md:px-6">
-            <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
-              <div className="space-y-8 animate-fade-in">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                  <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  100% Private - No data leaves your browser
-                </div>
-                
-                <h2 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-                  Discover Your{" "}
-                  <span className="bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
-                    YouTube
-                  </span>{" "}
-                  Viewing Habits
-                </h2>
-                
-                <p className="text-lg text-muted-foreground max-w-xl">
-                  Upload your YouTube watch history and get personalized insights into your viewing patterns. 
-                  No login required, and your data never leaves your browser.
-                </p>
-                
-                <div className="flex flex-wrap gap-3">
-                  <Button 
-                    size="lg"
-                    className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white shadow-lg shadow-red-500/25 transition-all hover:shadow-xl hover:shadow-red-500/30 hover:scale-105"
-                    asChild
-                  >
-                    <Link href="#upload" className="flex items-center gap-2">
-                      Get Started <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                  <Button variant="outline" size="lg" asChild>
-                    <Link href="#how-to-export">
-                      How to Export Data
-                    </Link>
-                  </Button>
-                  <Button variant="ghost" size="lg" asChild>
-                    <Link 
-                      href="https://github.com/ronething/yt-history" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="flex items-center gap-2"
-                    >
-                      <Star className="h-4 w-4" /> Star on GitHub
-                    </Link>
-                  </Button>
-                </div>
+      <main id="main-content">
+        <section id="upload" className="relative scroll-mt-20 overflow-hidden border-b border-white/[0.07]">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute left-[-14rem] top-[-12rem] h-[32rem] w-[32rem] rounded-full bg-red-500/10 blur-[100px]" />
+            <div className="absolute right-[-12rem] top-[8rem] h-[28rem] w-[28rem] rounded-full bg-rose-400/[0.06] blur-[110px]" />
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent_82%)]" />
+          </div>
+
+          <div className="relative mx-auto grid min-h-[720px] w-full max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.02fr_0.98fr] lg:px-8 lg:py-24">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-red-500/25 bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-200">
+                <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
+                100% local — your file never leaves this browser
               </div>
-              
-              <div className="flex justify-center animate-fade-in stagger-2">
-                <div className="relative">
-                  <div className="absolute -inset-4 bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-2xl blur-2xl" />
-                  <img
-                    src="/youtube-analytics-overview.png"
-                    alt="YouTube Analytics Dashboard"
-                    className="relative rounded-2xl object-cover border shadow-2xl"
-                    width={600}
-                    height={400}
-                  />
-                </div>
+
+              <h1 className="mt-7 text-balance text-4xl font-bold tracking-[-0.04em] text-white sm:text-5xl lg:text-6xl">
+                Analyze your{" "}
+                <span className="bg-gradient-to-r from-red-400 via-red-300 to-rose-400 bg-clip-text text-transparent">
+                  YouTube watch history
+                </span>
+              </h1>
+              <p className="mt-6 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
+                Upload your Google Takeout watch-history.json to explore viewing stats, top channels, routines, and repeat favorites without sending the file to a server.
+              </p>
+
+              <div className="mt-9 grid gap-3 sm:grid-cols-3">
+                {promises.map((item) => {
+                  const Icon = item.icon
+                  return (
+                    <div key={item.label} className="rounded-2xl border border-white/[0.08] bg-white/[0.035] p-4 backdrop-blur">
+                      <Icon className="h-4 w-4 text-red-300" aria-hidden="true" />
+                      <p className="mt-4 text-sm font-semibold text-white">{item.label}</p>
+                      <p className="mt-1 text-xs leading-5 text-zinc-500">{item.detail}</p>
+                    </div>
+                  )
+                })}
+              </div>
+
+              <div className="mt-8 flex items-start gap-3 text-sm leading-6 text-zinc-500">
+                <History className="mt-1 h-4 w-4 shrink-0 text-red-300" aria-hidden="true" />
+                <p>No YouTube login, API key, or server upload. Your browser builds a compact dashboard from the exported JSON.</p>
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* Upload Section */}
-        <section id="upload" className="w-full py-20 md:py-28 bg-muted/30">
-          <div className="container mx-auto px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-8 text-center">
-              <div className="space-y-4 max-w-2xl animate-fade-in">
-                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                  Upload Your Watch History
-                </h2>
-                <p className="text-muted-foreground text-lg">
-                  Simply upload your watch-history.json file from Google Takeout to visualize your YouTube viewing patterns.
-                </p>
-              </div>
-              <div className="w-full max-w-lg mx-auto animate-fade-in stagger-2">
+            <div className="relative lg:pl-4">
+              <div className="absolute -inset-6 rounded-[2rem] bg-red-500/[0.1] blur-2xl" />
+              <div className="relative rounded-[2rem] border border-white/10 bg-zinc-950/70 p-3 shadow-2xl shadow-black/30 backdrop-blur-xl sm:p-5">
                 <FileUploadForm />
               </div>
             </div>
           </div>
         </section>
 
-        {/* Features Section */}
-        <section id="features" className="w-full py-20 md:py-28">
-          <div className="container mx-auto px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Powerful Insights</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl">
-                Discover patterns in your YouTube viewing history with our comprehensive analytics.
+        <section className="border-b border-white/[0.07] py-20 sm:py-24" aria-labelledby="discover-title">
+          <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-red-300">Inside your history</p>
+              <h2 id="discover-title" className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">YouTube watch history stats, with context</h2>
+              <p className="mt-4 text-base leading-7 text-zinc-400">
+                This YouTube history analyzer turns your export into patterns you can scan, compare, and understand.
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {features.map((feature, index) => {
-                const Icon = feature.icon
+
+            <div className="mt-10 grid gap-4 sm:grid-cols-2">
+              {discoveries.map((item) => {
+                const Icon = item.icon
                 return (
-                  <Card 
-                    key={feature.title} 
-                    className="group relative overflow-hidden border-0 bg-card/50 backdrop-blur hover:shadow-xl transition-all duration-300 animate-fade-in"
-                    style={{ animationDelay: `${index * 100}ms` }}
-                  >
-                    <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
-                    <CardHeader>
-                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-4 shadow-lg`}>
-                        <Icon className="h-6 w-6 text-white" />
-                      </div>
-                      <CardTitle className="flex items-center gap-2 text-xl">
-                        {feature.title}
-                      </CardTitle>
-                      <CardDescription>{feature.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-muted-foreground">{feature.detail}</p>
-                    </CardContent>
-                  </Card>
+                  <article key={item.title} className="rounded-3xl border border-white/[0.08] bg-white/[0.03] p-6 transition-colors hover:bg-white/[0.05] sm:p-7">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/[0.12] text-red-300">
+                      <Icon className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                    <h3 className="mt-6 text-lg font-semibold text-white">{item.title}</h3>
+                    <p className="mt-2 max-w-lg text-sm leading-6 text-zinc-400">{item.description}</p>
+                  </article>
                 )
               })}
             </div>
+
+            <div className="relative mt-4">
+              <div className="absolute -inset-6 rounded-[2rem] bg-red-500/[0.06] blur-2xl" />
+              <AnalysisMethod />
+            </div>
           </div>
         </section>
 
-        {/* How It Works Section */}
-        <section id="how-it-works" className="w-full py-20 md:py-28 bg-muted/30">
-          <div className="container mx-auto px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">How It Works</h2>
-              <p className="text-muted-foreground text-lg max-w-2xl">
-                Our tool makes it easy to visualize your YouTube viewing history in just a few steps.
+        <section id="how-to-export" className="scroll-mt-20 border-b border-white/[0.07] py-20 sm:py-24">
+          <div className="mx-auto grid w-full max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-red-300">Bring your own data</p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">How to export YouTube history</h2>
+              <p className="mt-5 max-w-xl text-base leading-7 text-zinc-400">
+                Google Takeout lets you download watch history without granting this site access to your account.
               </p>
+              <Button asChild className="mt-7 bg-red-500 font-semibold text-white hover:bg-red-400">
+                <Link href="https://takeout.google.com/" target="_blank" rel="noopener noreferrer">
+                  Open Google Takeout
+                  <ArrowUpRight className="ml-2 h-4 w-4" aria-hidden="true" />
+                </Link>
+              </Button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              {steps.map((step, index) => (
-                <div 
-                  key={step.number} 
-                  className="flex flex-col items-center space-y-4 animate-fade-in"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-red-500 to-orange-500 rounded-2xl blur-lg opacity-50" />
-                    <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-orange-500 text-white text-2xl font-bold shadow-lg">
-                      {step.number}
-                    </div>
-                  </div>
-                  <h3 className="text-xl font-bold">{step.title}</h3>
-                  <p className="text-muted-foreground text-center">{step.description}</p>
-                </div>
+
+            <ol className="grid gap-3 sm:grid-cols-2">
+              {exportSteps.map((step, index) => (
+                <li key={step.title} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                  <span className="font-mono text-xs font-semibold text-red-300">0{index + 1}</span>
+                  <h3 className="mt-4 font-semibold text-white">{step.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-zinc-400">{step.description}</p>
+                </li>
               ))}
-            </div>
+            </ol>
           </div>
         </section>
 
-        {/* How to Export Section */}
-        <section id="how-to-export" className="w-full py-20 md:py-28">
-          <div className="container mx-auto px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                How to Export YouTube History
-              </h2>
-              <p className="text-muted-foreground text-lg max-w-2xl">
-                Follow these steps to download your YouTube watch history from Google Takeout.
-              </p>
-            </div>
-            <div className="w-full max-w-3xl mx-auto">
-              <ol className="space-y-3">
+        <section className="border-b border-white/[0.07] py-20 sm:py-24" aria-labelledby="privacy-title">
+          <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="grid overflow-hidden rounded-3xl border border-red-500/20 bg-gradient-to-br from-red-500/[0.12] via-white/[0.025] to-transparent lg:grid-cols-[1fr_0.9fr]">
+              <div className="p-7 sm:p-10">
+                <ShieldCheck className="h-7 w-7 text-red-300" aria-hidden="true" />
+                <h2 id="privacy-title" className="mt-6 text-2xl font-bold tracking-tight sm:text-3xl">Personal data should stay personal</h2>
+                <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-300">
+                  The original Takeout file is read locally and never sent to Playback Stats. Only compact dashboard summaries are stored for the current browser session.
+                </p>
+              </div>
+              <div className="grid gap-px border-t border-white/10 bg-white/10 sm:grid-cols-3 lg:grid-cols-1 lg:border-l lg:border-t-0">
                 {[
-                  <>Visit <a href="https://takeout.google.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">Google Takeout</a> and ensure you're logged into the correct Google account.</>,
-                  <>In the product list, deselect all items, then select only "YouTube and YouTube Music".</>,
-                  <>Click the "All YouTube data included" button next to "YouTube and YouTube Music".</>,
-                  <>In the pop-up options, deselect all items, keeping only "history" checked.</>,
-                  <>Click "OK", then scroll to the bottom of the page and click "Next step".</>,
-                  <>Choose your preferred export frequency, file type, and size. For a one-time export, keep the default settings.</>,
-                  <>Click "Create export" and wait for Google to prepare your data (this may take a few minutes to several hours).</>,
-                  <>Once ready, you'll receive an email. Click the download link in the email.</>,
-                  <>Download and unzip the file.</>,
-                  <>In the extracted folder, locate the <code className="bg-muted px-2 py-1 rounded text-sm font-mono">Takeout/YouTube and YouTube Music/history/watch-history.json</code> file.</>,
-                ].map((content, index) => (
-                  <li 
-                    key={index} 
-                    className="flex gap-4 p-4 bg-card/50 backdrop-blur rounded-xl border border-border/50 animate-fade-in"
-                    style={{ animationDelay: `${index * 50}ms` }}
-                  >
-                    <span className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-orange-500 text-white text-sm font-bold">
-                      {index + 1}
-                    </span>
-                    <span className="text-muted-foreground">{content}</span>
-                  </li>
+                  ["Browser only", "No upload endpoint"],
+                  ["Session only", "Close to clear"],
+                  ["Open source", "Inspect every rule"],
+                ].map(([title, detail]) => (
+                  <div key={title} className="bg-zinc-950/90 p-5 sm:p-6">
+                    <p className="text-sm font-semibold text-white">{title}</p>
+                    <p className="mt-1 text-xs text-zinc-500">{detail}</p>
+                  </div>
                 ))}
-              </ol>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* FAQ Section */}
-        <section id="faq" className="w-full py-20 md:py-28 bg-muted/30">
-          <div className="container mx-auto px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Frequently Asked Questions
-              </h2>
-              <p className="text-muted-foreground text-lg max-w-2xl">
-                Common questions about our YouTube History Visualizer.
-              </p>
+        <section className="py-20 sm:py-24" aria-labelledby="youtube-faq-title">
+          <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
+            <div className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-red-300">Good to know</p>
+              <h2 id="youtube-faq-title" className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">YouTube history analyzer FAQ</h2>
             </div>
-            <div className="w-full max-w-3xl mx-auto space-y-4">
-              {faqs.map((faq, index) => (
-                <Card 
-                  key={index} 
-                  className="border-0 bg-card/50 backdrop-blur animate-fade-in"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg">{faq.question}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">{faq.answer}</p>
-                  </CardContent>
-                </Card>
+            <div className="mt-10 grid gap-x-10 gap-y-8 md:grid-cols-2">
+              {faqs.map((faq) => (
+                <article key={faq.question} className="border-t border-white/10 pt-5">
+                  <h3 className="font-semibold text-white">{faq.question}</h3>
+                  <p className="mt-2 text-sm leading-6 text-zinc-400">{faq.answer}</p>
+                </article>
               ))}
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="border-t py-8 bg-background/80 backdrop-blur-lg">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center">
-                <Zap className="h-3 w-3 text-white" />
-              </div>
-              <p className="text-sm text-muted-foreground">
-                © {new Date().getFullYear()} YouTube History Visualizer. All rights reserved.
-              </p>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Made with ❤️ by <a href="https://forgetimer.com" target="_blank" className="text-primary hover:underline">Forgetimer</a>
-            </p>
-            <div className="flex items-center gap-6">
-              <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Privacy Policy
-              </Link>
-              <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Terms of Service
-              </Link>
-              <Link 
-                href="https://github.com/ronething/yt-history" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                GitHub
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <PlaybackFooter />
     </div>
   )
 }
