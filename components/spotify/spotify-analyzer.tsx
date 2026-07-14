@@ -8,7 +8,7 @@ import SpotifyUpload from "@/components/spotify/spotify-upload"
 import type { SpotifyAnalysis } from "@/lib/spotify-analysis"
 
 const promises = [
-  { icon: BarChart3, label: "7+ years", detail: "Trend lines and yearly chapters" },
+  { icon: BarChart3, label: "Your timeline", detail: "Monthly and yearly listening trends" },
   { icon: Music2, label: "Your favorites", detail: "Artists and tracks ranked clearly" },
   { icon: Clock3, label: "Your rhythm", detail: "Hours, weekdays, and streaks" },
 ]
@@ -54,13 +54,13 @@ export default function SpotifyAnalyzer() {
           </div>
 
           <h1 className="mt-7 text-balance text-4xl font-bold tracking-[-0.04em] text-white sm:text-5xl lg:text-6xl">
-            See the story behind your{" "}
+            Analyze your{" "}
             <span className="bg-gradient-to-r from-[#1ed760] via-emerald-300 to-[#1DB954] bg-clip-text text-transparent">
-              Spotify listening
+              Spotify listening history
             </span>
           </h1>
           <p className="mt-6 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
-            Turn your Spotify streaming history into a private, interactive look at the music, people, and patterns that shaped your time.
+            Import Spotify streaming-history JSON files to explore listening time, top artists and tracks, monthly trends, streaks, and playback habits in a private dashboard.
           </p>
 
           <div className="mt-9 grid gap-3 sm:grid-cols-3">

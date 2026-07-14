@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export const metadata: Metadata = {
-  title: "Spotify History Analyzer | Private Listening Stats",
+  title: "Spotify Listening History Analyzer & Stats | Playback Stats",
   description:
     "Analyze your Spotify streaming history locally. Explore listening time, top artists, tracks, trends, and playback habits without uploading your data.",
   alternates: {
@@ -26,13 +26,13 @@ export const metadata: Metadata = {
     type: "website",
     url: "https://playbackstats.com/spotify",
     siteName: "Playback Stats",
-    title: "Spotify History Analyzer | Private Listening Stats",
+    title: "Spotify Listening History Analyzer & Stats | Playback Stats",
     description:
       "Turn your Spotify streaming history into private charts and personal listening insights — all in your browser.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Spotify History Analyzer | Private Listening Stats",
+    title: "Spotify Listening History Analyzer & Stats | Playback Stats",
     description: "Private, local Spotify listening analysis with charts, rankings, and personal insights.",
   },
   robots: {
@@ -61,6 +61,24 @@ const discoveries = [
     icon: HeartPulse,
     title: "How you listen",
     description: "Extended exports reveal skip, shuffle, offline, platform, and natural-ending patterns.",
+  },
+]
+
+const analysisDetails = [
+  {
+    title: "Listening time and trends",
+    description:
+      "Sum Spotify's ms_played values into total hours, active days, monthly and yearly timelines, weekdays, and hours of the day.",
+  },
+  {
+    title: "Artists, tracks, and repeats",
+    description:
+      "Rank artists by listening time and tracks by qualified plays, while showing variety, repeat behavior, and each top artist's share.",
+  },
+  {
+    title: "Extended-history behavior",
+    description:
+      "When those fields exist, compare platform use, skips, shuffle listening, offline playback, and tracks played to their natural end.",
   },
 ]
 
@@ -104,6 +122,16 @@ const faqs = [
     answer:
       "The dashboard uses a transparent 30-second threshold for its qualified-play rankings. Total listening hours still include every music listening event in the import.",
   },
+  {
+    question: "Are podcasts and audiobooks included?",
+    answer:
+      "No. This is a music-history analyzer. Podcast episodes and audiobook chapters use different fields in Spotify exports, so the parser excludes them instead of mixing spoken audio into artist and track rankings.",
+  },
+  {
+    question: "What if I import both standard and extended history?",
+    answer:
+      "The analyzer prefers the richer extended records and omits standard-history records that fall inside the same covered date range. Standard records outside that range can still extend the timeline.",
+  },
 ]
 
 export default function SpotifyPage() {
@@ -119,10 +147,10 @@ export default function SpotifyPage() {
             <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#4ade80]">Inside your history</p>
               <h2 id="discover-title" className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
-                More than a top-ten list
+                Spotify listening stats, with context
               </h2>
               <p className="mt-4 text-base leading-7 text-zinc-400">
-                Spotify&apos;s export is a timeline. This analyzer turns it into context you can scan, compare, and understand.
+                Spotify&apos;s streaming-history export is a timeline of playback events. This analyzer turns those records into listening patterns you can scan, compare, and understand.
               </p>
             </div>
 
@@ -144,6 +172,34 @@ export default function SpotifyPage() {
                 )
               })}
             </div>
+
+            <article
+              aria-labelledby="spotify-analysis-method-title"
+              className="mt-4 rounded-3xl border border-white/10 bg-zinc-950/70 p-6 sm:p-8"
+            >
+              <div className="max-w-3xl">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#4ade80]">How the analysis works</p>
+                <h3 id="spotify-analysis-method-title" className="mt-4 text-2xl font-bold tracking-tight sm:text-3xl">
+                  What this Spotify history analyzer calculates
+                </h3>
+                <p className="mt-4 text-sm leading-7 text-zinc-400 sm:text-base">
+                  Playback Stats reads recognized music records from Standard Streaming History or Extended Streaming History. It uses Spotify&apos;s own timestamps and milliseconds played, keeps the analysis in memory, and separates total listening time from qualified plays of at least 30 seconds.
+                </p>
+              </div>
+
+              <dl className="mt-8 grid gap-3 md:grid-cols-3">
+                {analysisDetails.map((item) => (
+                  <div key={item.title} className="rounded-2xl bg-white/[0.04] p-5 ring-1 ring-inset ring-white/[0.06]">
+                    <dt className="font-semibold text-white">{item.title}</dt>
+                    <dd className="mt-2 text-sm leading-6 text-zinc-400">{item.description}</dd>
+                  </div>
+                ))}
+              </dl>
+
+              <p className="mt-4 rounded-2xl border border-[#1DB954]/15 bg-[#1DB954]/[0.06] p-5 text-sm leading-6 text-zinc-400">
+                Podcast episodes and audiobook chapters are intentionally excluded so music rankings stay comparable. Behavior metrics appear only when the selected export actually contains those extended fields.
+              </p>
+            </article>
           </div>
         </section>
 
@@ -219,7 +275,7 @@ export default function SpotifyPage() {
             <div className="text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#4ade80]">Good to know</p>
               <h2 id="spotify-faq-title" className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
-                Before you analyze
+                Spotify listening history analyzer FAQ
               </h2>
             </div>
             <div className="mt-10 space-y-3">

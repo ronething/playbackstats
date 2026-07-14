@@ -71,6 +71,24 @@ const discoveries = [
   },
 ]
 
+const analysisDetails = [
+  {
+    title: "Viewing activity",
+    description:
+      "Count watch events by day, month, weekday, and hour to see when your YouTube activity rises or falls.",
+  },
+  {
+    title: "Videos and channels",
+    description:
+      "Rank repeat videos, compare channel frequency, and measure how concentrated or varied your viewing history is.",
+  },
+  {
+    title: "Habits over time",
+    description:
+      "Find your first recorded video, busiest day, peak viewing hour, favorite weekday, and longest active streak.",
+  },
+]
+
 const exportSteps = [
   {
     title: "Open Google Takeout",
@@ -107,66 +125,50 @@ const faqs = [
     question: "What happens when I refresh?",
     answer: "The original file is never retained. Compact YouTube dashboard data stays only in this browser session and can be cleared by closing it.",
   },
+  {
+    question: "Can this calculate my total YouTube watch time?",
+    answer:
+      "No. Google Takeout watch history records when a video was watched, but it does not provide reliable minutes watched for each event. Playback Stats reports viewing activity rather than inventing a watch-time estimate.",
+  },
+  {
+    question: "Why might the totals differ from YouTube itself?",
+    answer:
+      "The analyzer can only count valid records present in the exported JSON. Deleted history, paused history, private or unavailable videos, and changes to your Google activity settings can affect what the export contains.",
+  },
 ]
 
-function DashboardPreview() {
-  const bars = [34, 52, 41, 67, 49, 76, 58, 82, 64, 91, 73, 96]
-
+function AnalysisMethod() {
   return (
-    <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-zinc-950/80 p-4 shadow-2xl shadow-black/40 backdrop-blur-xl sm:p-5">
-      <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
-        <div>
-          <p className="text-xs font-medium text-zinc-500">Dashboard preview</p>
-          <p className="mt-1 text-sm font-semibold text-white">Your viewing history</p>
-        </div>
-        <span className="rounded-lg border border-red-500/20 bg-red-500/10 px-2.5 py-1 font-mono text-[10px] text-red-200">
-          LOCAL DATA
-        </span>
+    <article
+      aria-labelledby="youtube-analysis-method-title"
+      className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-zinc-950/80 p-6 shadow-2xl shadow-black/40 backdrop-blur-xl sm:p-8"
+    >
+      <div className="max-w-3xl">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-red-300">How the analysis works</p>
+        <h3 id="youtube-analysis-method-title" className="mt-4 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+          What this YouTube history analyzer measures
+        </h3>
+        <p className="mt-4 text-sm leading-7 text-zinc-400 sm:text-base">
+          Google Takeout&apos;s <code className="font-mono text-red-200">watch-history.json</code> is a chronological list of viewing events. Playback Stats reads each valid video title, channel, and timestamp, then groups those records into useful comparisons without contacting YouTube or Google.
+        </p>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-3">
-        <div className="rounded-2xl bg-white/[0.04] p-4 ring-1 ring-inset ring-white/[0.06]">
-          <p className="text-[11px] text-zinc-500">Videos watched</p>
-          <p className="mt-3 font-mono text-2xl font-semibold tracking-tight text-white">12,842</p>
-          <p className="mt-1 text-[11px] text-zinc-600">across 6.4 years</p>
-        </div>
-        <div className="rounded-2xl bg-white/[0.04] p-4 ring-1 ring-inset ring-white/[0.06]">
-          <p className="text-[11px] text-zinc-500">Unique channels</p>
-          <p className="mt-3 font-mono text-2xl font-semibold tracking-tight text-white">1,318</p>
-          <p className="mt-1 text-[11px] text-zinc-600">from your export</p>
-        </div>
-      </div>
-
-      <div className="mt-3 rounded-2xl bg-white/[0.04] p-4 ring-1 ring-inset ring-white/[0.06]">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-[11px] text-zinc-500">Viewing activity</p>
-            <p className="mt-1 text-sm font-medium text-white">A year in motion</p>
+      <dl className="mt-8 grid gap-3 md:grid-cols-3">
+        {analysisDetails.map((item) => (
+          <div key={item.title} className="rounded-2xl bg-white/[0.04] p-5 ring-1 ring-inset ring-white/[0.06]">
+            <dt className="font-semibold text-white">{item.title}</dt>
+            <dd className="mt-2 text-sm leading-6 text-zinc-400">{item.description}</dd>
           </div>
-          <span className="font-mono text-[10px] text-zinc-600">JAN — DEC</span>
-        </div>
-        <div className="mt-6 flex h-28 items-end gap-2" aria-hidden="true">
-          {bars.map((height, index) => (
-            <span
-              key={`${height}-${index}`}
-              className="flex-1 rounded-t bg-gradient-to-t from-red-700/55 to-red-400 transition-opacity hover:opacity-80"
-              style={{ height: `${height}%` }}
-            />
-          ))}
-        </div>
-      </div>
+        ))}
+      </dl>
 
-      <div className="mt-3 grid gap-3 sm:grid-cols-[1.15fr_0.85fr]">
-        <div className="rounded-2xl bg-red-500/[0.08] p-4 ring-1 ring-inset ring-red-500/15">
-          <p className="text-[11px] text-red-200/60">Peak viewing window</p>
-          <p className="mt-2 font-mono text-lg font-semibold text-white">21:00 — 22:00</p>
-        </div>
-        <div className="rounded-2xl bg-white/[0.04] p-4 ring-1 ring-inset ring-white/[0.06]">
-          <p className="text-[11px] text-zinc-500">Longest streak</p>
-          <p className="mt-2 font-mono text-lg font-semibold text-white">47 days</p>
-        </div>
+      <div className="mt-4 rounded-2xl border border-amber-300/15 bg-amber-300/[0.06] p-5">
+        <p className="text-sm font-semibold text-amber-100">A deliberate limitation</p>
+        <p className="mt-2 text-sm leading-6 text-zinc-400">
+          YouTube&apos;s export does not include dependable watch duration for each history event. The dashboard therefore reports views and viewing patterns, not a made-up total watch-time number.
+        </p>
       </div>
-    </div>
+    </article>
   )
 }
 
@@ -255,7 +257,7 @@ export default function Home() {
 
             <div className="relative mt-4">
               <div className="absolute -inset-6 rounded-[2rem] bg-red-500/[0.06] blur-2xl" />
-              <DashboardPreview />
+              <AnalysisMethod />
             </div>
           </div>
         </section>
