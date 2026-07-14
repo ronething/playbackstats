@@ -1,20 +1,19 @@
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
 import { Metadata } from "next"
 
-import { Button } from "@/components/ui/button"
+import PlaybackFooter from "@/components/playback-footer"
+import PlaybackHeader from "@/components/playback-header"
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | YouTube History Visualizer",
-  description: "Privacy policy and data handling practices for the YouTube History Visualizer tool.",
+  title: "Privacy Policy | Playback Stats",
+  description: "Privacy and local data-processing practices for Playback Stats.",
   openGraph: {
-    title: "Privacy Policy | YouTube History Visualizer",
-    description: "Privacy policy and data handling practices for the YouTube History Visualizer tool.",
+    title: "Privacy Policy | Playback Stats",
+    description: "Privacy and local data-processing practices for Playback Stats.",
     url: "https://playbackstats.com/privacy",
   },
   twitter: {
-    title: "Privacy Policy | YouTube History Visualizer",
-    description: "Privacy policy and data handling practices for the YouTube History Visualizer tool.",
+    title: "Privacy Policy | Playback Stats",
+    description: "Privacy and local data-processing practices for Playback Stats.",
   },
   alternates: {
     canonical: "https://playbackstats.com/privacy",
@@ -23,34 +22,22 @@ export const metadata: Metadata = {
 
 export default function PrivacyPolicy() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <header className="border-b">
-        <div className="container mx-auto flex h-16 items-center px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold">YouTube History Visualizer</h1>
-          </Link>
-          <nav className="ml-auto flex gap-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/" className="flex items-center gap-1">
-                <ArrowLeft className="h-4 w-4" /> Back to Home
-              </Link>
-            </Button>
-          </nav>
-        </div>
-      </header>
-      <main className="flex-1">
-        <div className="container mx-auto py-12 px-4 md:px-6">
-          <div className="max-w-3xl mx-auto space-y-8">
+    <div className="dark flex min-h-screen flex-col bg-zinc-950 text-white">
+      <PlaybackHeader />
+      <main id="main-content" className="flex-1">
+        <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+          <article className="mx-auto max-w-3xl space-y-10 text-sm leading-7 text-zinc-300 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-white [&_li]:pl-1 [&_strong]:font-semibold [&_strong]:text-white sm:text-base">
             <div>
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-4">Privacy Policy</h1>
-              <p className="text-gray-500">Last Updated: {new Date().toLocaleDateString()}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">Playback Stats</p>
+              <h1 className="mt-4 text-4xl font-bold tracking-[-0.04em] text-white sm:text-5xl">Privacy Policy</h1>
+              <p className="mt-4 text-sm text-zinc-500">Last updated: {new Date().toLocaleDateString()}</p>
             </div>
 
             <section className="space-y-4">
               <h2 className="text-2xl font-bold">Introduction</h2>
               <p>
-                At YouTube History Visualizer, we take your privacy seriously. This Privacy Policy explains how we
-                handle your data when you use our service to visualize your YouTube watch history.
+                Playback Stats helps you visualize personal YouTube and Spotify history. This policy explains which
+                data stays in your browser and which limited site-level analytics may be collected.
               </p>
             </section>
 
@@ -58,12 +45,12 @@ export default function PrivacyPolicy() {
               <h2 className="text-2xl font-bold">Data Collection and Processing</h2>
               <p>
                 <strong>Client-Side Processing Only:</strong> Our service operates entirely within your web browser.
-                When you upload your YouTube watch history file:
+                When you select a supported YouTube or Spotify history file:
               </p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>The file is processed locally on your device</li>
-                <li>Your data is never sent to our servers</li>
-                <li>We do not store, collect, or transmit any of your personal data</li>
+                <li>Your selected history file is never sent to our servers</li>
+                <li>We do not store or transmit its titles, artists, playback records, or generated insights</li>
                 <li>
                   The data is temporarily stored in your browser&apos;s memory only for the duration of your session
                 </li>
@@ -73,24 +60,25 @@ export default function PrivacyPolicy() {
             <section className="space-y-4">
               <h2 className="text-2xl font-bold">Information Usage</h2>
               <p>
-                Since we do not collect any personal data, we do not use your information for any purposes beyond
-                providing the visualization service directly in your browser.
+                File contents are used only to calculate the visualizations shown in your current browser session.
+                Spotify parsing uses a field allowlist and ignores account, IP address, location, and technical-log data.
               </p>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-2xl font-bold">Cookies and Tracking</h2>
+              <h2 className="text-2xl font-bold">Site Analytics</h2>
               <p>
-                Our website does not use cookies or tracking technologies to monitor your activity or collect
-                information about you.
+                The website may use aggregate analytics for page views, file-download events, and outbound-link
+                events. Uploaded history contents, file contents, analysis results, track titles, and artist names are
+                not included in those analytics events.
               </p>
             </section>
 
             <section className="space-y-4">
               <h2 className="text-2xl font-bold">Third-Party Services</h2>
               <p>
-                We do not integrate with third-party services that would collect your data. All processing and
-                visualization happen locally in your web browser.
+                History processing and visualization happen locally in your browser. Links to services such as
+                Spotify, Google, GitHub, or other external sites are governed by those services&apos; own privacy policies.
               </p>
             </section>
 
@@ -123,24 +111,10 @@ export default function PrivacyPolicy() {
                 support@playbackstats.com
               </p>
             </section>
-          </div>
+          </article>
         </div>
       </main>
-      <footer className="border-t py-6">
-        <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-sm leading-loose text-gray-500 md:text-left">
-            © {new Date().getFullYear()} YouTube History Visualizer. All rights reserved.
-          </p>
-          <div className="flex items-center gap-4">
-            <Link href="/privacy" className="text-sm text-gray-500 hover:underline">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="text-sm text-gray-500 hover:underline">
-              Terms of Service
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <PlaybackFooter />
     </div>
   )
-} 
+}

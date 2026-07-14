@@ -8,6 +8,39 @@ body {
   font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+  background: #09090b;
+}
+
+body {
+  background: #09090b;
+}
+
+::selection {
+  background: rgba(248, 113, 113, 0.28);
+  color: #ffffff;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.82);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 code, pre, .font-mono {
   font-family: 'Geist Mono', ui-monospace, monospace;
 }
@@ -96,7 +129,9 @@ code, pre, .font-mono {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply antialiased;
+    background: #09090b;
+    color: #fafafa;
   }
 }
 
