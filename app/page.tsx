@@ -175,7 +175,7 @@ function AnalysisMethod() {
 export default function Home() {
   return (
     <div className="dark min-h-screen bg-zinc-950 text-white">
-      <PlaybackHeader activePlatform="youtube" guideHref="#how-to-export" />
+      <PlaybackHeader activePlatform="youtube" guideHref="/takeout-guide" />
 
       <main id="main-content">
         <section id="upload" className="relative scroll-mt-20 overflow-hidden border-b border-white/[0.07]">
@@ -276,6 +276,9 @@ export default function Home() {
                   <ArrowUpRight className="ml-2 h-4 w-4" aria-hidden="true" />
                 </Link>
               </Button>
+              <Link href="/takeout-guide" className="ml-4 inline-flex items-center text-sm font-medium text-zinc-400 underline-offset-4 hover:text-white hover:underline">
+                Read the detailed Takeout guide
+              </Link>
             </div>
 
             <ol className="grid gap-3 sm:grid-cols-2">

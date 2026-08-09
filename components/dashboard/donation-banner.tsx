@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Coffee, X, Heart, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { trackEvent } from "@/lib/analytics"
 
 const KOFI_URL = "https://ko-fi.com/ashing"
 const BANNER_DISMISSED_KEY = "yt-history-donation-banner-dismissed"
@@ -38,6 +39,10 @@ export default function DonationBanner() {
   }
 
   const handleSupport = () => {
+    trackEvent("donation_clicked", {
+      platform: "youtube",
+      source_page: "youtube_dashboard",
+    })
     window.open(KOFI_URL, '_blank', 'noopener,noreferrer')
     handleDismiss()
   }

@@ -10,7 +10,8 @@ A privacy-first web app for exploring your YouTube watch history and Spotify lis
 
 - YouTube viewing trends, top channels, repeat videos, streaks, and habits
 - Spotify listening time, top artists and tracks, trends, and playback behavior
-- Google Takeout and Spotify streaming-history JSON support
+- Google Takeout ZIP and watch-history.json support, plus Spotify streaming-history JSON
+- Clearly labeled anonymous YouTube sample report
 - Private, browser-only processing with no account connection or API key
 
 ## Run locally

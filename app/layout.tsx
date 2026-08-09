@@ -15,12 +15,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <head>
         <Script
           defer
           data-domain="playbackstats.com"
-          src="https://plausible.vibecodinghub.org/js/script.file-downloads.outbound-links.js"
+          src="https://plausible.vibecodinghub.org/js/script.js"
         />
         <Script id="plausible-custom">
           {`window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }`}

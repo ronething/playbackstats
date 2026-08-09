@@ -5,6 +5,7 @@ import { BarChart3, Clock3, Music2, ShieldCheck, Sparkles } from "lucide-react"
 
 import SpotifyDashboard from "@/components/spotify/spotify-dashboard"
 import SpotifyUpload from "@/components/spotify/spotify-upload"
+import { recordCountBucket, trackEvent, type AnalyticsInputFormat } from "@/lib/analytics"
 import type { SpotifyAnalysis } from "@/lib/spotify-analysis"
 
 const promises = [
@@ -18,6 +19,17 @@ export default function SpotifyAnalyzer() {
 
   const handleComplete = (nextAnalysis: SpotifyAnalysis) => {
     setAnalysis(nextAnalysis)
+    const inputFormat: AnalyticsInputFormat = nextAnalysis.source.format === "extended"
+      ? "spotify_extended"
+      : nextAnalysis.source.format === "standard"
+        ? "spotify_standard"
+        : "spotify_mixed"
+    trackEvent("dashboard_viewed", {
+      platform: "spotify",
+      input_format: inputFormat,
+      record_count_bucket: recordCountBucket(nextAnalysis.source.retainedRecords),
+      source_page: "spotify",
+    })
     window.setTimeout(() => {
       document.getElementById("spotify-dashboard")?.scrollIntoView({ behavior: "smooth", block: "start" })
     }, 50)

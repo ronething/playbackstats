@@ -1,0 +1,31 @@
+[
+  {
+    "header": "YouTube",
+    "title": "Watched Anonymous fixture video",
+    "titleUrl": "https://www.youtube.com/watch?v=fixture-1",
+    "subtitles": [{ "name": "Fixture Channel", "url": "https://www.youtube.com/channel/fixture" }],
+    "time": "2025-01-01T23:30:00.000Z",
+    "products": ["YouTube"]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched Anonymous fixture video",
+    "titleUrl": "https://www.youtube.com/watch?v=fixture-1",
+    "subtitles": [{ "name": "Fixture Channel" }],
+    "time": "2025-01-02T00:30:00+01:00",
+    "products": ["YouTube"]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched a video that has been removed",
+    "time": "2025-01-03T08:15:00.000Z",
+    "products": ["YouTube"]
+  },
+  {
+    "header": "YouTube",
+    "title": "观看匿名示例视频",
+    "titleUrl": "https://www.youtube.com/watch?v=fixture-localized",
+    "time": "2025-01-04T16:45:00.000Z",
+    "products": ["YouTube"]
+  }
+]

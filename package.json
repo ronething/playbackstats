@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "node --test tests/*.test.mjs",
+    "test": "TZ=UTC node --experimental-strip-types --test tests/*.test.mjs tests/*.test.ts",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -44,6 +44,7 @@
     "cmdk": "1.0.4",
     "date-fns": "4.1.0",
     "embla-carousel-react": "8.5.1",
+    "fflate": "0.8.3",
     "input-otp": "1.4.1",
     "lucide-react": "^0.454.0",
     "next": "16.2.11",
@@ -53,7 +54,6 @@
     "react-dom": "^19.2.4",
     "react-hook-form": "^7.54.1",
     "react-resizable-panels": "^2.1.7",
-    "react-share": "^5.2.2",
     "recharts": "2.15.4",
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.5.5",

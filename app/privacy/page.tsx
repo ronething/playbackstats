@@ -51,6 +51,7 @@ export default function PrivacyPolicy() {
                 <li>The file is processed locally on your device</li>
                 <li>Your selected history file is never sent to our servers</li>
                 <li>We do not store or transmit its titles, artists, playback records, or generated insights</li>
+                <li>Google Takeout ZIP inspection and extraction also happen locally, with archive safety limits</li>
                 <li>
                   The data is temporarily stored in your browser&apos;s memory only for the duration of your session
                 </li>
@@ -68,9 +69,11 @@ export default function PrivacyPolicy() {
             <section className="space-y-4">
               <h2 className="text-2xl font-bold">Site Analytics</h2>
               <p>
-                The website may use aggregate analytics for page views, file-download events, and outbound-link
-                events. Uploaded history contents, file contents, analysis results, track titles, and artist names are
-                not included in those analytics events.
+                The website may use aggregate analytics for page views and a small import, dashboard, sharing,
+                donation, and feature-interest funnel. Custom events accept only the platform, input format, coarse
+                file-size, record-count and processing-time buckets, a fixed error code, and a fixed source-page label.
+                Filenames, titles, channels, artists, account identifiers, exact timestamps, playback records, and
+                generated results are blocked from custom analytics payloads.
               </p>
             </section>
 

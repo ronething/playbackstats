@@ -1,8 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Calendar, Clock, Film, Users } from "lucide-react"
+import { ArrowLeft, Calendar, Clock, FlaskConical, Film, Users } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -17,48 +18,30 @@ import DonationBanner from "@/components/dashboard/donation-banner"
 import PersonalityInsights from "@/components/dashboard/personality-insights"
 import FunFacts from "@/components/dashboard/fun-facts"
 import Achievements from "@/components/dashboard/achievements"
+import ProInterestCard from "@/components/dashboard/pro-interest-card"
 import PlaybackFooter from "@/components/playback-footer"
 import PlaybackHeader from "@/components/playback-header"
-
-// Define interfaces for the processed data
-interface Stats {
-  totalVideos: number
-  oldestDate: string
-  newestDate: string
-  uniqueChannels: number
-  daysDifference: number
-}
-
-interface DailyView {
-  date: string
-  count: number
-}
-
-interface HourlyView {
-  hour: number
-  count: number
-}
-
-interface TopVideo {
-  id: string
-  title: string
-  channel?: string
-  count: number
-}
-
-interface ChannelCount {
-  name: string
-  count: number
-}
+import { recordCountBucket, trackEvent } from "@/lib/analytics"
+import type {
+  YoutubeAdvancedStats,
+  YoutubeChannelCount,
+  YoutubeDailyView,
+  YoutubeHourlyView,
+  YoutubeStats,
+  YoutubeTopVideo,
+} from "@/lib/youtube-analysis"
+import { loadYoutubeDashboard } from "@/lib/youtube-dashboard-storage"
 
 export default function DashboardPage() {
   const router = useRouter()
-  const [stats, setStats] = useState<Stats | null>(null)
-  const [dailyViews, setDailyViews] = useState<DailyView[]>([])
-  const [hourlyViews, setHourlyViews] = useState<HourlyView[]>([])
-  const [topVideos, setTopVideos] = useState<TopVideo[]>([])
-  const [channelCounts, setChannelCounts] = useState<ChannelCount[]>([])
-  const [advancedStats, setAdvancedStats] = useState<any | null>(null)
+  const hasTrackedDashboard = useRef(false)
+  const [stats, setStats] = useState<YoutubeStats | null>(null)
+  const [dailyViews, setDailyViews] = useState<YoutubeDailyView[]>([])
+  const [hourlyViews, setHourlyViews] = useState<YoutubeHourlyView[]>([])
+  const [topVideos, setTopVideos] = useState<YoutubeTopVideo[]>([])
+  const [channelCounts, setChannelCounts] = useState<YoutubeChannelCount[]>([])
+  const [advancedStats, setAdvancedStats] = useState<YoutubeAdvancedStats | null>(null)
+  const [isSample, setIsSample] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -66,25 +49,30 @@ export default function DashboardPage() {
     const frameId = window.requestAnimationFrame(() => {
       // Load the processed data from sessionStorage after the first paint.
       try {
-        const statsJson = sessionStorage.getItem("youtubeHistoryStats")
-        const dailyViewsJson = sessionStorage.getItem("youtubeHistoryDailyViews")
-        const hourlyViewsJson = sessionStorage.getItem("youtubeHistoryHourlyViews")
-        const topVideosJson = sessionStorage.getItem("youtubeHistoryTopVideos")
-        const channelsJson = sessionStorage.getItem("youtubeHistoryChannels")
-        const advancedStatsJson = sessionStorage.getItem("youtubeHistoryAdvancedStats")
-
-        if (!statsJson) {
+        const storedDashboard = loadYoutubeDashboard()
+        if (!storedDashboard) {
           setError("No data found. Please upload your YouTube history file.")
           setIsLoading(false)
           return
         }
-
-        setStats(JSON.parse(statsJson))
-        setDailyViews(dailyViewsJson ? JSON.parse(dailyViewsJson) : [])
-        setHourlyViews(hourlyViewsJson ? JSON.parse(hourlyViewsJson) : [])
-        setTopVideos(topVideosJson ? JSON.parse(topVideosJson) : [])
-        setChannelCounts(channelsJson ? JSON.parse(channelsJson) : [])
-        setAdvancedStats(advancedStatsJson ? JSON.parse(advancedStatsJson) : null)
+        const { data, metadata } = storedDashboard
+        setStats(data.stats)
+        setDailyViews(data.dailyViews)
+        setHourlyViews(data.hourlyViews)
+        setTopVideos(data.topVideos)
+        setChannelCounts(data.channelCounts)
+        setAdvancedStats(data.advancedStats)
+        setIsSample(metadata.isSample)
+        if (!hasTrackedDashboard.current) {
+          hasTrackedDashboard.current = true
+          trackEvent("dashboard_viewed", {
+            platform: "youtube",
+            input_format: metadata.inputFormat,
+            file_size_bucket: metadata.fileSizeBucket,
+            record_count_bucket: recordCountBucket(data.stats.totalVideos),
+            source_page: "youtube_dashboard",
+          })
+        }
         setIsLoading(false)
       } catch (err) {
         console.error("Error loading data:", err)
@@ -172,6 +160,21 @@ export default function DashboardPage() {
               <span className="text-zinc-500">videos analyzed</span>
             </div>
           </section>
+
+          {isSample && (
+            <section role="status" className="flex flex-col gap-4 rounded-2xl border border-sky-300/20 bg-sky-300/[0.08] p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <FlaskConical className="mt-0.5 h-5 w-5 shrink-0 text-sky-300" aria-hidden="true" />
+                <div>
+                  <p className="font-semibold text-sky-100">Sample report — not your viewing history</p>
+                  <p className="mt-1 text-sm leading-6 text-zinc-400">Every title, channel, and statistic on this page comes from a synthetic example dataset.</p>
+                </div>
+              </div>
+              <Button asChild className="shrink-0 bg-red-500 text-white hover:bg-red-400">
+                <Link href="/#upload">Import my history</Link>
+              </Button>
+            </section>
+          )}
 
           {/* Donation Banner */}
           <section className="animate-fade-in">
@@ -341,6 +344,10 @@ export default function DashboardPage() {
                 <SocialShare />
               </CardContent>
             </Card>
+          </section>
+
+          <section className="animate-fade-in stagger-6">
+            <ProInterestCard />
           </section>
         </div>
       </main>

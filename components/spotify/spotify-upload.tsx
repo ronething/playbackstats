@@ -18,6 +18,14 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
+  fileSizeBucket,
+  processingTimeBucket,
+  recordCountBucket,
+  trackEvent,
+  type AnalyticsErrorCode,
+  type AnalyticsInputFormat,
+} from "@/lib/analytics"
+import {
   analyzeSpotifyStreams,
   mergeSpotifyStreams,
   parseSpotifyExport,
@@ -89,11 +97,25 @@ export default function SpotifyUpload({ onComplete }: SpotifyUploadProps) {
 
   const setFiles = (files: FileList | File[]) => {
     const nextSelection = selectStreamingFiles(files)
+    const selectedBytes = Array.from(files).reduce((sum, file) => sum + file.size, 0)
     setError(null)
+    trackEvent("history_file_selected", {
+      platform: "spotify",
+      input_format: "spotify_json",
+      file_size_bucket: fileSizeBucket(selectedBytes),
+      source_page: "spotify",
+    })
 
     if (nextSelection.files.length === 0) {
       setSelection({ files: [], ignoredCount: 0 })
       setError("No JSON files were found. Choose your unzipped Spotify Account Data folder or its streaming-history JSON files.")
+      trackEvent("history_parse_failed", {
+        platform: "spotify",
+        input_format: "spotify_json",
+        file_size_bucket: fileSizeBucket(selectedBytes),
+        error_code: "unsupported_format",
+        source_page: "spotify",
+      })
       return
     }
 
@@ -101,6 +123,13 @@ export default function SpotifyUpload({ onComplete }: SpotifyUploadProps) {
     if (totalBytes > MAX_TOTAL_BYTES) {
       setSelection({ files: [], ignoredCount: 0 })
       setError("The selected streaming-history files exceed the 250 MB local processing limit.")
+      trackEvent("history_parse_failed", {
+        platform: "spotify",
+        input_format: "spotify_json",
+        file_size_bucket: fileSizeBucket(totalBytes),
+        error_code: "memory_exhaustion",
+        source_page: "spotify",
+      })
       return
     }
 
@@ -128,10 +157,21 @@ export default function SpotifyUpload({ onComplete }: SpotifyUploadProps) {
     setIsProcessing(true)
     setError(null)
     setProgress(3)
+    const startedAt = performance.now()
+    const sizeBucket = fileSizeBucket(selection.files.reduce((sum, file) => sum + file.size, 0))
     const extended: SpotifyStream[] = []
     const standard: SpotifyStream[] = []
     let recognizedFiles = 0
     let ignoredFiles = selection.ignoredCount
+    let malformedFiles = 0
+    let failureCode: AnalyticsErrorCode = "browser_failure"
+
+    trackEvent("history_parse_started", {
+      platform: "spotify",
+      input_format: "spotify_json",
+      file_size_bucket: sizeBucket,
+      source_page: "spotify",
+    })
 
     try {
       for (let index = 0; index < selection.files.length; index += 1) {
@@ -151,11 +191,13 @@ export default function SpotifyUpload({ onComplete }: SpotifyUploadProps) {
             standard.push(...parsed.standard)
           }
         } catch {
+          malformedFiles += 1
           ignoredFiles += 1
         }
       }
 
       if (extended.length + standard.length === 0) {
+        failureCode = malformedFiles === selection.files.length ? "malformed_json" : "unsupported_format"
         throw new Error(
           "No music streaming history was found. Spotify Technical Log Information is not a listening-history export; choose Spotify Account Data instead.",
         )
@@ -171,15 +213,37 @@ export default function SpotifyUpload({ onComplete }: SpotifyUploadProps) {
       await nextFrame()
       const analysis = analyzeSpotifyStreams(merged)
 
+      const inputFormat: AnalyticsInputFormat = merged.source.format === "extended"
+        ? "spotify_extended"
+        : merged.source.format === "standard"
+          ? "spotify_standard"
+          : "spotify_mixed"
+      trackEvent("history_parse_succeeded", {
+        platform: "spotify",
+        input_format: inputFormat,
+        file_size_bucket: sizeBucket,
+        record_count_bucket: recordCountBucket(analysis.source.retainedRecords),
+        processing_time_bucket: processingTimeBucket(performance.now() - startedAt),
+        source_page: "spotify",
+      })
+
       setProgress(100)
       setStage("Your dashboard is ready")
       await nextFrame()
       onComplete(analysis)
     } catch (processingError) {
+      if (processingError instanceof RangeError) failureCode = "memory_exhaustion"
       const message = processingError instanceof Error
         ? processingError.message
         : "We could not analyze those files. Check that they are unmodified Spotify JSON exports."
       setError(message)
+      trackEvent("history_parse_failed", {
+        platform: "spotify",
+        input_format: "spotify_json",
+        file_size_bucket: sizeBucket,
+        error_code: failureCode,
+        source_page: "spotify",
+      })
     } finally {
       setIsProcessing(false)
     }
