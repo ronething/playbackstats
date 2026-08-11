@@ -50,6 +50,7 @@ export default function PrivacyPolicy() {
               <ul className="list-disc pl-6 space-y-2">
                 <li>The file is processed locally on your device</li>
                 <li>Your selected history file is never sent to our servers</li>
+                <li>Google Takeout ZIP inspection and extraction also happen locally, with archive safety limits</li>
                 <li>We do not store or transmit its titles, artists, playback records, or generated insights</li>
                 <li>
                   The data is temporarily stored in your browser&apos;s memory only for the duration of your session
