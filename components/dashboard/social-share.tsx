@@ -13,11 +13,11 @@ import {
 } from "react-share"
 import { Check, Coffee, Download, Heart, Image as ImageIcon, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import type { YoutubeStats } from "@/lib/youtube-analysis"
+import type { YoutubeAdvancedStats, YoutubeChannelCount, YoutubeStats } from "@/lib/youtube-analysis"
 import { createYoutubeShareCard, downloadYoutubeShareCard } from "@/lib/youtube-share-card"
 
 const SHARE_URL = "https://playbackstats.com"
-const SHARE_TITLE = "Check out this awesome YouTube History Visualizer! Analyze your YouTube watching habits with beautiful charts and insights."
+const SHARE_TITLE = "I found my YouTube viewing personality with Playback Stats. What does your history say about you?"
 const KOFI_URL = "https://ko-fi.com/ashing"
 
 // Custom Reddit share button since react-share uses wrong URL (web/submit instead of reddit.com/submit)
@@ -39,6 +39,8 @@ function CustomRedditShareButton({ url, title, children }: { url: string; title:
 }
 
 interface SocialShareProps {
+  advancedStats: YoutubeAdvancedStats | null
+  channelCounts: YoutubeChannelCount[]
   stats: YoutubeStats
 }
 
@@ -47,7 +49,7 @@ interface ShareCardPreview {
   url: string
 }
 
-export default function SocialShare({ stats }: SocialShareProps) {
+export default function SocialShare({ advancedStats, channelCounts, stats }: SocialShareProps) {
   const [downloadState, setDownloadState] = useState<"idle" | "working" | "done" | "error">("idle")
   const [preview, setPreview] = useState<ShareCardPreview | null>(null)
   const [previewError, setPreviewError] = useState(false)
@@ -55,7 +57,7 @@ export default function SocialShare({ stats }: SocialShareProps) {
   useEffect(() => {
     let cancelled = false
 
-    void createYoutubeShareCard(stats)
+    void createYoutubeShareCard({ advancedStats, channelCounts, stats })
       .then(({ blob, previewUrl }) => {
         if (cancelled) return
         setPreviewError(false)
@@ -69,7 +71,7 @@ export default function SocialShare({ stats }: SocialShareProps) {
     return () => {
       cancelled = true
     }
-  }, [stats])
+  }, [advancedStats, channelCounts, stats])
 
   const handleDownload = () => {
     if (!preview) return
@@ -85,15 +87,15 @@ export default function SocialShare({ stats }: SocialShareProps) {
 
   return (
     <div className="flex flex-col items-center gap-6 py-8 px-4">
-      <div className="w-full max-w-2xl overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-red-500/10 via-white/[0.025] to-emerald-300/[0.06] p-5 sm:p-6">
+      <div className="w-full max-w-3xl overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-red-500/10 via-white/[0.025] to-emerald-300/[0.06] p-5 sm:p-6">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-          <div className="w-32 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black/20 shadow-xl shadow-black/20 sm:w-36">
+          <div className="w-40 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black/20 shadow-xl shadow-black/20 sm:w-52">
             {preview ? (
               <Image
                 src={preview.url}
-                alt="Preview of your locally generated YouTube share card"
-                width={216}
-                height={270}
+                alt="Preview of your locally generated YouTube DNA card"
+                width={270}
+                height={338}
                 unoptimized
                 className="h-auto w-full"
               />
@@ -112,10 +114,10 @@ export default function SocialShare({ stats }: SocialShareProps) {
               <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-red-300/20 bg-red-500/15 text-red-200">
                 <ImageIcon className="h-5 w-5" aria-hidden="true" />
               </div>
-              <h3 className="font-semibold text-white">Download your share card</h3>
+              <h3 className="font-semibold text-white">Your YouTube DNA card</h3>
               <p className="mt-1 max-w-md text-sm leading-6 text-zinc-400">
-                Save a 4:5 PNG with four aggregate stats, the Playback Stats logo, and playbackstats.com.
-                Video titles and channel names are not included.
+                Turn your history into a 4:5 PNG with your viewing personality, top channel names,
+                favorite day, peak hour, and longest streak. Review the preview before sharing it.
               </p>
             </div>
             <Button
@@ -131,7 +133,7 @@ export default function SocialShare({ stats }: SocialShareProps) {
               ) : (
                 <Download className="mr-2 h-4 w-4" aria-hidden="true" />
               )}
-              {!preview ? "Preparing PNG…" : downloadState === "done" ? "Download again" : "Download PNG"}
+              {!preview ? "Preparing card…" : downloadState === "done" ? "Download again" : "Download DNA card"}
             </Button>
           </div>
         </div>
@@ -139,7 +141,7 @@ export default function SocialShare({ stats }: SocialShareProps) {
           {previewError || downloadState === "error"
             ? "The browser could not download the image. Please try again."
             : downloadState === "done"
-              ? "Share card downloaded. Attach it anywhere you choose."
+              ? "YouTube DNA card downloaded. Attach it anywhere you choose."
               : "Created entirely in this browser tab and never uploaded."}
         </p>
       </div>
@@ -147,7 +149,7 @@ export default function SocialShare({ stats }: SocialShareProps) {
       <div className="text-center space-y-2">
         <h3 className="text-lg font-semibold">Share Playback Stats</h3>
         <p className="text-sm text-muted-foreground">
-          These buttons share the public website only. Add your downloaded card to the post if you want.
+          These buttons share the public website only. Add your DNA card to the post if you want.
         </p>
       </div>
       

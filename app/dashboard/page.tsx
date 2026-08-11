@@ -310,7 +310,7 @@ export default function DashboardPage() {
           <section className="animate-fade-in stagger-6">
             <Card className="border-white/[0.08] bg-white/[0.035] shadow-2xl shadow-black/20 backdrop-blur">
               <CardContent className="pt-6">
-                <SocialShare stats={stats} />
+                <SocialShare stats={stats} advancedStats={advancedStats} channelCounts={channelCounts} />
               </CardContent>
             </Card>
           </section>
