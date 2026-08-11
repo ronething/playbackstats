@@ -110,6 +110,11 @@ const exportSteps = [
 
 const faqs = [
   {
+    question: "How do I see my YouTube stats as a viewer?",
+    answer:
+      "Export your YouTube and YouTube Music history with Google Takeout, then select the resulting watch-history.json file here. Playback Stats turns those viewer records into channel rankings, viewing trends, streaks, and other personal stats without connecting to your YouTube account.",
+  },
+  {
     question: "Does my YouTube history get uploaded?",
     answer: "No. The file is read and summarized locally in your browser. Playback Stats has no upload endpoint for history files.",
   },
@@ -119,7 +124,8 @@ const faqs = [
   },
   {
     question: "How far back will the dashboard go?",
-    answer: "As far back as the valid watch records in your export. The available range depends on your Google history settings.",
+    answer:
+      "The dashboard goes back to the earliest valid watch record in your export. It cannot recover activity from periods when YouTube History was paused, items you deleted or Google removed through auto-delete, or records excluded by your Google activity settings.",
   },
   {
     question: "What happens when I refresh?",

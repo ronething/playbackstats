@@ -23,6 +23,9 @@ test("YouTube homepage does not present fabricated history as user data", () => 
   assert.doesNotMatch(youtubePage, /12,842|1,318|47 days/)
   assert.match(youtubePage, /What this YouTube history analyzer measures/)
   assert.match(youtubePage, /does not include dependable watch duration/)
+  assert.match(youtubePage, /How do I see my YouTube stats as a viewer\?/)
+  assert.match(youtubePage, /YouTube History was paused/)
+  assert.match(youtubePage, /Google removed through auto-delete/)
   assert.match(youtubePage, /href="\/guides\/youtube-watch-history-json"/)
   assert.match(youtubePage, /href="\/guides\/how-to-see-most-watched-youtube-channels"/)
 })
@@ -32,6 +35,16 @@ test("Spotify page describes the input and calculations in visible content", () 
   assert.match(spotifyAnalyzer, /Spotify listening history/)
   assert.match(spotifyPage, /Standard Streaming History or Extended Streaming History/)
   assert.match(spotifyPage, /separates total listening time from qualified plays/)
+  assert.match(spotifyPage, /Can I see Spotify stats without logging in\?/)
+  assert.match(spotifyPage, /How far back will my Spotify stats go\?/)
+  assert.match(spotifyPage, /What happens to my Spotify stats when I refresh\?/)
+})
+
+test("Sitemap uses stable page-specific modification dates", () => {
+  assert.doesNotMatch(sitemap, /new Date|currentDate/)
+  assert.equal((sitemap.match(/lastModified:/g) ?? []).length, 6)
+  assert.match(sitemap, /lastModified: "2026-08-11"/)
+  assert.match(sitemap, /lastModified: "2025-05-04"/)
 })
 
 test("YouTube JSON guide documents the supported Takeout fields and limitations", () => {
