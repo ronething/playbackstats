@@ -13,6 +13,7 @@ export default function PlaybackFooter() {
           <Link href="/" className="transition-colors hover:text-white">YouTube</Link>
           <Link href="/spotify" className="transition-colors hover:text-white">Spotify</Link>
           <Link href="/guides/youtube-watch-history-json" className="transition-colors hover:text-white">JSON guide</Link>
+          <Link href="/guides/how-to-see-most-watched-youtube-channels" className="transition-colors hover:text-white">Top channels</Link>
           <Link href="/privacy" className="transition-colors hover:text-white">Privacy</Link>
           <Link href="/terms" className="transition-colors hover:text-white">Terms</Link>
           <Link

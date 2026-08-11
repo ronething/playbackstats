@@ -317,6 +317,13 @@ export default function YouTubeWatchHistoryJsonGuide() {
                     <Link href="/#how-to-export">Read the export steps</Link>
                   </Button>
                 </div>
+                <Link
+                  href="/guides/how-to-see-most-watched-youtube-channels"
+                  className="mt-6 inline-flex items-center text-sm font-medium text-red-200 underline-offset-4 hover:text-red-100 hover:underline"
+                >
+                  Learn how channel and repeat-video rankings work
+                  <ArrowRight className="ml-1.5 h-3.5 w-3.5" aria-hidden="true" />
+                </Link>
               </div>
               <div className="grid gap-px border-t border-white/10 bg-white/10 sm:grid-cols-3 lg:grid-cols-1 lg:border-l lg:border-t-0">
                 {[
