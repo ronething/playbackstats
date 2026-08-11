@@ -67,6 +67,55 @@ test("Takeout ZIP extraction locates only watch-history.json", async () => {
   assert.equal(parsed.records.length, 4)
 })
 
+test("Takeout ZIP extraction supports localized watch-history filenames", async () => {
+  const localizedPaths = [
+    "Takeout/YouTube en YouTube Music/geschiedenis/kijkgeschiedenis.json",
+    "Takeout/YouTube und YouTube Music/Verlauf/Wiedergabeverlauf.json",
+    "Takeout/YouTube 和 YouTube Music/记录/观看记录.json",
+  ]
+
+  for (const path of localizedPaths) {
+    const extracted = await extractWatchHistoryJsonFromZip(zipWithHistory(path))
+    assert.equal(parseYoutubeJson(extracted).records.length, 4)
+  }
+})
+
+test("localized history detection ignores YouTube search history", async () => {
+  const fixture = Uint8Array.from(readFileSync(fixtureUrls[0]))
+  const searchHistory = new TextEncoder().encode(JSON.stringify([{
+    header: "YouTube",
+    title: "Searched for fixture query",
+    titleUrl: "https://www.youtube.com/results?search_query=fixture",
+    time: "2025-01-01T12:00:00.000Z",
+    products: ["YouTube"],
+  }]))
+  const archive = zipSync({
+    "Takeout/YouTube und YouTube Music/Verlauf/Suchverlauf.json": searchHistory,
+    "Takeout/YouTube und YouTube Music/Verlauf/Wiedergabeverlauf.json": fixture,
+  })
+
+  const extracted = await extractWatchHistoryJsonFromZip(archive)
+  assert.equal(parseYoutubeJson(extracted).records.length, 4)
+})
+
+test("ZIP extraction rejects search history without viewing events", async () => {
+  const searchHistory = new TextEncoder().encode(JSON.stringify([{
+    header: "YouTube",
+    title: "Searched for fixture query",
+    titleUrl: "https://www.youtube.com/results?search_query=fixture",
+    time: "2025-01-01T12:00:00.000Z",
+    products: ["YouTube"],
+  }]))
+  const archive = zipSync({
+    "Takeout/YouTube en YouTube Music/geschiedenis/zoekgeschiedenis.json": searchHistory,
+  })
+
+  await assert.rejects(extractWatchHistoryJsonFromZip(archive), (error: unknown) => {
+    assert.ok(error instanceof YoutubeImportError)
+    return error.code === "incorrect_takeout_path"
+  })
+})
+
 test("browser file reader accepts both Takeout ZIP and JSON inputs", async () => {
   const zipResult = await readYoutubeHistoryFile(
     new File([zipWithHistory()], "takeout.zip", { type: "application/zip" }),

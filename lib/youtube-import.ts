@@ -41,8 +41,9 @@ const ZIP_LOCAL_FILE_HEADER = 0x04034b50
 const ZIP_CENTRAL_DIRECTORY_HEADER = 0x02014b50
 const ZIP_END_OF_CENTRAL_DIRECTORY = 0x06054b50
 const MAX_EOCD_SEARCH_BYTES = 65_557
-const WATCH_HISTORY_PATH = /(^|\/)history\/watch-history\.json$/i
-const YOUTUBE_PATH = /(^|\/)(youtube|youtube and youtube music)(\/|$)/i
+const JSON_FILE_PATH = /\.json$/i
+const WATCH_HISTORY_FILENAME = /(^|\/)watch-history\.json$/i
+const YOUTUBE_PATH = /(^|\/)[^/]*youtube[^/]*(\/|$)/i
 
 export class YoutubeImportError extends Error {
   readonly code: YoutubeImportErrorCode
@@ -57,7 +58,7 @@ export class YoutubeImportError extends Error {
 export const IMPORT_ERROR_GUIDANCE: Record<YoutubeImportErrorCode, ImportErrorGuidance> = {
   unsupported_format: {
     title: "This file type is not supported",
-    message: "Choose Google Takeout's watch-history.json or the original Takeout ZIP archive.",
+    message: "Choose a Google Takeout viewing-history JSON file or the original Takeout ZIP archive.",
     action: "Use a .json or .zip file and keep the export unmodified.",
   },
   malformed_json: {
@@ -67,8 +68,8 @@ export const IMPORT_ERROR_GUIDANCE: Record<YoutubeImportErrorCode, ImportErrorGu
   },
   incorrect_takeout_path: {
     title: "YouTube watch history was not found",
-    message: "This looks like a different export file, or the ZIP does not contain history/watch-history.json.",
-    action: "In Takeout, include YouTube and YouTube Music → history, then import the new archive or watch-history.json.",
+    message: "This looks like a different export file, or the ZIP does not contain recognizable YouTube viewing history.",
+    action: "In Takeout, include YouTube and YouTube Music history, then import the ZIP or its viewing-history JSON file.",
   },
   empty_history: {
     title: "No viewing records were found",
@@ -212,20 +213,41 @@ export function inspectTakeoutZip(bytes: Uint8Array): ZipEntry[] {
   return entries
 }
 
-function selectWatchHistoryEntry(entries: ZipEntry[]): ZipEntry {
-  const pathMatches = entries.filter((entry) => WATCH_HISTORY_PATH.test(entry.name))
-  const youtubeMatches = pathMatches.filter((entry) => YOUTUBE_PATH.test(entry.name))
-  const candidates = youtubeMatches.length > 0 ? youtubeMatches : pathMatches
+function isYoutubeWatchUrl(value: unknown): boolean {
+  if (typeof value !== "string") return false
 
-  if (candidates.length !== 1) {
-    throw new YoutubeImportError(
-      "incorrect_takeout_path",
-      candidates.length === 0
-        ? "The archive does not contain history/watch-history.json."
-        : "The archive contains multiple possible watch-history.json files.",
-    )
+  try {
+    const url = new URL(value)
+    const hostname = url.hostname.toLowerCase().replace(/\.$/, "")
+    if (hostname === "youtu.be") return url.pathname.length > 1
+    if (hostname !== "youtube.com" && !hostname.endsWith(".youtube.com")) return false
+
+    return url.pathname === "/watch"
+      || url.pathname.startsWith("/shorts/")
+      || url.pathname.startsWith("/live/")
+  } catch {
+    return false
   }
-  return candidates[0]
+}
+
+function hasWatchHistorySignal(record: Record<string, unknown>): boolean {
+  if (typeof record.time !== "string" || !Number.isFinite(Date.parse(record.time))) return false
+  if (isYoutubeWatchUrl(record.titleUrl)) return true
+  if (!Array.isArray(record.subtitles)) return false
+
+  return record.subtitles.some((subtitle) => {
+    if (!isRecord(subtitle)) return false
+    return (typeof subtitle.name === "string" && subtitle.name.trim().length > 0)
+      || isYoutubeWatchUrl(subtitle.url)
+  })
+}
+
+function looksLikeWatchHistory(text: string): boolean {
+  try {
+    return parseYoutubeJson(text).records.some(hasWatchHistorySignal)
+  } catch {
+    return false
+  }
 }
 
 async function extractZipEntry(bytes: Uint8Array, entry: ZipEntry): Promise<Uint8Array> {
@@ -260,7 +282,7 @@ async function extractZipEntry(bytes: Uint8Array, entry: ZipEntry): Promise<Uint
   return new Promise<Uint8Array>((resolve, reject) => {
     inflate(compressed, { size: entry.uncompressedSize }, (error, output) => {
       if (error) {
-        reject(new YoutubeImportError("unsupported_format", "The watch-history.json ZIP entry could not be decompressed."))
+        reject(new YoutubeImportError("unsupported_format", "A JSON entry in the ZIP could not be decompressed."))
         return
       }
       resolve(output)
@@ -270,16 +292,14 @@ async function extractZipEntry(bytes: Uint8Array, entry: ZipEntry): Promise<Uint
     if (error instanceof RangeError) {
       throw new YoutubeImportError("memory_exhaustion", "The browser ran out of memory while expanding the ZIP.")
     }
-    throw new YoutubeImportError("unsupported_format", "The watch-history.json ZIP entry could not be decompressed.")
+    throw new YoutubeImportError("unsupported_format", "A JSON entry in the ZIP could not be decompressed.")
   })
 }
 
-export async function extractWatchHistoryJsonFromZip(bytes: Uint8Array): Promise<string> {
-  const entries = inspectTakeoutZip(bytes)
-  const entry = selectWatchHistoryEntry(entries)
+async function readZipEntryText(bytes: Uint8Array, entry: ZipEntry): Promise<string> {
   const jsonBytes = await extractZipEntry(bytes, entry)
   if (jsonBytes.byteLength !== entry.uncompressedSize) {
-    throw new YoutubeImportError("unsupported_format", "The extracted watch-history.json size did not match the archive.")
+    throw new YoutubeImportError("unsupported_format", "An extracted JSON entry size did not match the archive.")
   }
   try {
     return new TextDecoder("utf-8", { fatal: true }).decode(jsonBytes)
@@ -287,8 +307,46 @@ export async function extractWatchHistoryJsonFromZip(bytes: Uint8Array): Promise
     if (error instanceof RangeError) {
       throw new YoutubeImportError("memory_exhaustion", "The browser ran out of memory while decoding the ZIP entry.")
     }
-    throw new YoutubeImportError("malformed_json", "The watch-history.json entry is not valid UTF-8 text.")
+    throw new YoutubeImportError("malformed_json", "A JSON entry in the ZIP is not valid UTF-8 text.")
   }
+}
+
+async function findWatchHistoryText(bytes: Uint8Array, entries: ZipEntry[]): Promise<string | undefined> {
+  const matches: string[] = []
+  for (const entry of entries) {
+    const text = await readZipEntryText(bytes, entry)
+    if (WATCH_HISTORY_FILENAME.test(entry.name) || looksLikeWatchHistory(text)) matches.push(text)
+  }
+
+  if (matches.length > 1) {
+    throw new YoutubeImportError(
+      "incorrect_takeout_path",
+      "The archive contains multiple possible YouTube viewing-history JSON files.",
+    )
+  }
+  return matches[0]
+}
+
+export async function extractWatchHistoryJsonFromZip(bytes: Uint8Array): Promise<string> {
+  const entries = inspectTakeoutZip(bytes)
+  const jsonEntries = entries.filter((entry) => JSON_FILE_PATH.test(entry.name))
+  const preferredEntries = jsonEntries.filter(
+    (entry) => WATCH_HISTORY_FILENAME.test(entry.name) || YOUTUBE_PATH.test(entry.name),
+  )
+  const preferred = await findWatchHistoryText(bytes, preferredEntries)
+  if (preferred) return preferred
+
+  const preferredNames = new Set(preferredEntries.map((entry) => entry.name))
+  const fallback = await findWatchHistoryText(
+    bytes,
+    jsonEntries.filter((entry) => !preferredNames.has(entry.name)),
+  )
+  if (fallback) return fallback
+
+  throw new YoutubeImportError(
+    "incorrect_takeout_path",
+    "The archive does not contain recognizable YouTube viewing-history JSON.",
+  )
 }
 
 export function getYoutubeInputFormat(file: Pick<File, "name" | "type">): YoutubeInputFormat {
