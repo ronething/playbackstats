@@ -28,6 +28,23 @@ function zipWithHistory(path = "Takeout/YouTube and YouTube Music/history/watch-
   })
 }
 
+function youtubeSearchHistoryFixture() {
+  const records = [
+    "https://www.youtube.com/results?search_query=fixture-one",
+    "https://www.youtube.com/watch?v=clicked-search-result",
+    "https://www.youtube.com/results?search_query=fixture-two",
+    "https://www.youtube.com/results?search_query=fixture-three",
+  ].map((titleUrl, index) => ({
+    header: "YouTube",
+    title: `Fixture search activity ${index + 1}`,
+    titleUrl,
+    time: new Date(Date.UTC(2025, 0, 1, index)).toISOString(),
+    products: ["YouTube"],
+  }))
+
+  return new TextEncoder().encode(JSON.stringify(records))
+}
+
 test("supported anonymized YouTube fixtures parse and analyze", () => {
   const results = fixtureUrls.map((url) => {
     const parsed = parseYoutubeJson(readFileSync(url, "utf8"))
@@ -82,15 +99,8 @@ test("Takeout ZIP extraction supports localized watch-history filenames", async 
 
 test("localized history detection ignores YouTube search history", async () => {
   const fixture = Uint8Array.from(readFileSync(fixtureUrls[0]))
-  const searchHistory = new TextEncoder().encode(JSON.stringify([{
-    header: "YouTube",
-    title: "Searched for fixture query",
-    titleUrl: "https://www.youtube.com/results?search_query=fixture",
-    time: "2025-01-01T12:00:00.000Z",
-    products: ["YouTube"],
-  }]))
   const archive = zipSync({
-    "Takeout/YouTube und YouTube Music/Verlauf/Suchverlauf.json": searchHistory,
+    "Takeout/YouTube und YouTube Music/Verlauf/Suchverlauf.json": youtubeSearchHistoryFixture(),
     "Takeout/YouTube und YouTube Music/Verlauf/Wiedergabeverlauf.json": fixture,
   })
 
@@ -99,15 +109,8 @@ test("localized history detection ignores YouTube search history", async () => {
 })
 
 test("ZIP extraction rejects search history without viewing events", async () => {
-  const searchHistory = new TextEncoder().encode(JSON.stringify([{
-    header: "YouTube",
-    title: "Searched for fixture query",
-    titleUrl: "https://www.youtube.com/results?search_query=fixture",
-    time: "2025-01-01T12:00:00.000Z",
-    products: ["YouTube"],
-  }]))
   const archive = zipSync({
-    "Takeout/YouTube en YouTube Music/geschiedenis/zoekgeschiedenis.json": searchHistory,
+    "Takeout/YouTube en YouTube Music/geschiedenis/zoekgeschiedenis.json": youtubeSearchHistoryFixture(),
   })
 
   await assert.rejects(extractWatchHistoryJsonFromZip(archive), (error: unknown) => {

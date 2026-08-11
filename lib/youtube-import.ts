@@ -231,7 +231,6 @@ function isYoutubeWatchUrl(value: unknown): boolean {
 }
 
 function hasWatchHistorySignal(record: Record<string, unknown>): boolean {
-  if (typeof record.time !== "string" || !Number.isFinite(Date.parse(record.time))) return false
   if (isYoutubeWatchUrl(record.titleUrl)) return true
   if (!Array.isArray(record.subtitles)) return false
 
@@ -244,7 +243,17 @@ function hasWatchHistorySignal(record: Record<string, unknown>): boolean {
 
 function looksLikeWatchHistory(text: string): boolean {
   try {
-    return parseYoutubeJson(text).records.some(hasWatchHistorySignal)
+    const records = parseYoutubeJson(text).records
+    let datedRecords = 0
+    let watchRecords = 0
+
+    for (const record of records) {
+      if (typeof record.time !== "string" || !Number.isFinite(Date.parse(record.time))) continue
+      datedRecords += 1
+      if (hasWatchHistorySignal(record)) watchRecords += 1
+    }
+
+    return watchRecords > 0 && watchRecords * 2 >= datedRecords
   } catch {
     return false
   }
