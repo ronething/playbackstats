@@ -12,6 +12,7 @@ export default function PlaybackFooter() {
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
           <Link href="/" className="transition-colors hover:text-white">YouTube</Link>
           <Link href="/spotify" className="transition-colors hover:text-white">Spotify</Link>
+          <Link href="/guides/youtube-watch-history-json" className="transition-colors hover:text-white">JSON guide</Link>
           <Link href="/privacy" className="transition-colors hover:text-white">Privacy</Link>
           <Link href="/terms" className="transition-colors hover:text-white">Terms</Link>
           <Link
