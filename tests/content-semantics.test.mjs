@@ -23,6 +23,7 @@ test("YouTube homepage does not present fabricated history as user data", () => 
   assert.doesNotMatch(youtubePage, /12,842|1,318|47 days/)
   assert.match(youtubePage, /What this YouTube history analyzer measures/)
   assert.match(youtubePage, /does not include dependable watch duration/)
+  assert.match(youtubePage, /Google Takeout ZIP or watch-history\.json/)
   assert.match(youtubePage, /How do I see my YouTube stats as a viewer\?/)
   assert.match(youtubePage, /YouTube History was paused/)
   assert.match(youtubePage, /Google removed through auto-delete/)

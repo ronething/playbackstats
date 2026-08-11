@@ -19,46 +19,24 @@ import FunFacts from "@/components/dashboard/fun-facts"
 import Achievements from "@/components/dashboard/achievements"
 import PlaybackFooter from "@/components/playback-footer"
 import PlaybackHeader from "@/components/playback-header"
-
-// Define interfaces for the processed data
-interface Stats {
-  totalVideos: number
-  oldestDate: string
-  newestDate: string
-  uniqueChannels: number
-  daysDifference: number
-}
-
-interface DailyView {
-  date: string
-  count: number
-}
-
-interface HourlyView {
-  hour: number
-  count: number
-}
-
-interface TopVideo {
-  id: string
-  title: string
-  channel?: string
-  count: number
-}
-
-interface ChannelCount {
-  name: string
-  count: number
-}
+import type {
+  YoutubeAdvancedStats,
+  YoutubeChannelCount,
+  YoutubeDailyView,
+  YoutubeHourlyView,
+  YoutubeStats,
+  YoutubeTopVideo,
+} from "@/lib/youtube-analysis"
+import { loadYoutubeDashboard } from "@/lib/youtube-dashboard-storage"
 
 export default function DashboardPage() {
   const router = useRouter()
-  const [stats, setStats] = useState<Stats | null>(null)
-  const [dailyViews, setDailyViews] = useState<DailyView[]>([])
-  const [hourlyViews, setHourlyViews] = useState<HourlyView[]>([])
-  const [topVideos, setTopVideos] = useState<TopVideo[]>([])
-  const [channelCounts, setChannelCounts] = useState<ChannelCount[]>([])
-  const [advancedStats, setAdvancedStats] = useState<any | null>(null)
+  const [stats, setStats] = useState<YoutubeStats | null>(null)
+  const [dailyViews, setDailyViews] = useState<YoutubeDailyView[]>([])
+  const [hourlyViews, setHourlyViews] = useState<YoutubeHourlyView[]>([])
+  const [topVideos, setTopVideos] = useState<YoutubeTopVideo[]>([])
+  const [channelCounts, setChannelCounts] = useState<YoutubeChannelCount[]>([])
+  const [advancedStats, setAdvancedStats] = useState<YoutubeAdvancedStats | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -66,25 +44,19 @@ export default function DashboardPage() {
     const frameId = window.requestAnimationFrame(() => {
       // Load the processed data from sessionStorage after the first paint.
       try {
-        const statsJson = sessionStorage.getItem("youtubeHistoryStats")
-        const dailyViewsJson = sessionStorage.getItem("youtubeHistoryDailyViews")
-        const hourlyViewsJson = sessionStorage.getItem("youtubeHistoryHourlyViews")
-        const topVideosJson = sessionStorage.getItem("youtubeHistoryTopVideos")
-        const channelsJson = sessionStorage.getItem("youtubeHistoryChannels")
-        const advancedStatsJson = sessionStorage.getItem("youtubeHistoryAdvancedStats")
-
-        if (!statsJson) {
+        const storedDashboard = loadYoutubeDashboard()
+        if (!storedDashboard) {
           setError("No data found. Please upload your YouTube history file.")
           setIsLoading(false)
           return
         }
-
-        setStats(JSON.parse(statsJson))
-        setDailyViews(dailyViewsJson ? JSON.parse(dailyViewsJson) : [])
-        setHourlyViews(hourlyViewsJson ? JSON.parse(hourlyViewsJson) : [])
-        setTopVideos(topVideosJson ? JSON.parse(topVideosJson) : [])
-        setChannelCounts(channelsJson ? JSON.parse(channelsJson) : [])
-        setAdvancedStats(advancedStatsJson ? JSON.parse(advancedStatsJson) : null)
+        const { data } = storedDashboard
+        setStats(data.stats)
+        setDailyViews(data.dailyViews)
+        setHourlyViews(data.hourlyViews)
+        setTopVideos(data.topVideos)
+        setChannelCounts(data.channelCounts)
+        setAdvancedStats(data.advancedStats)
         setIsLoading(false)
       } catch (err) {
         console.error("Error loading data:", err)

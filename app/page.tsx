@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button"
 export const metadata: Metadata = {
   title: "YouTube Watch History Analyzer & Stats | Playback Stats",
   description:
-    "Upload Google Takeout watch-history.json to analyze YouTube watch history, viewing stats, top channels, streaks, and trends—privately in your browser.",
+    "Import a Google Takeout ZIP or watch-history.json to analyze YouTube viewing stats, top channels, streaks, and trends—privately in your browser.",
   alternates: {
     canonical: "https://playbackstats.com/",
   },
@@ -99,12 +99,12 @@ const exportSteps = [
     description: "Open the included-data options and leave only history selected before creating the export.",
   },
   {
-    title: "Find the JSON file",
-    description: "Unzip the download and locate history/watch-history.json inside the YouTube folder.",
+    title: "Download the export",
+    description: "Keep the ZIP intact, or unzip it and locate history/watch-history.json inside the YouTube folder.",
   },
   {
     title: "Explore locally",
-    description: "Choose that JSON file here. Parsing and analysis run inside this browser tab.",
+    description: "Choose the Takeout ZIP or watch-history.json here. Parsing and analysis run inside this browser tab.",
   },
 ]
 
@@ -112,7 +112,7 @@ const faqs = [
   {
     question: "How do I see my YouTube stats as a viewer?",
     answer:
-      "Export your YouTube and YouTube Music history with Google Takeout, then select the resulting watch-history.json file here. Playback Stats turns those viewer records into channel rankings, viewing trends, streaks, and other personal stats without connecting to your YouTube account.",
+      "Export your YouTube and YouTube Music history with Google Takeout, then select the Takeout ZIP or resulting watch-history.json file here. Playback Stats turns those viewer records into channel rankings, viewing trends, streaks, and other personal stats without connecting to your YouTube account.",
   },
   {
     question: "Does my YouTube history get uploaded?",
@@ -221,7 +221,7 @@ export default function Home() {
                 </span>
               </h1>
               <p className="mt-6 max-w-xl text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
-                Upload your Google Takeout watch-history.json to explore viewing stats, top channels, routines, and repeat favorites without sending the file to a server.
+                Import your Google Takeout ZIP or watch-history.json to explore viewing stats, top channels, routines, and repeat favorites without sending the file to a server.
               </p>
 
               <div className="mt-9 grid gap-3 sm:grid-cols-3">
