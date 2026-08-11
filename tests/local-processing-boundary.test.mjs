@@ -6,6 +6,7 @@ const localImportFiles = [
   "../components/file-upload-form.tsx",
   "../lib/youtube-import.ts",
   "../lib/youtube-analysis.ts",
+  "../lib/youtube-share-card.ts",
   "../components/spotify/spotify-upload.tsx",
   "../lib/spotify-analysis.ts",
 ]

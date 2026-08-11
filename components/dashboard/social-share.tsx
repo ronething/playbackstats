@@ -1,5 +1,7 @@
 "use client"
 
+import Image from "next/image"
+import { useEffect, useState } from "react"
 import {
   FacebookShareButton,
   TwitterShareButton,
@@ -9,8 +11,10 @@ import {
   WhatsappIcon,
   RedditIcon,
 } from "react-share"
-import { Coffee, Heart } from "lucide-react"
+import { Check, Coffee, Download, Heart, Image as ImageIcon, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import type { YoutubeStats } from "@/lib/youtube-analysis"
+import { createYoutubeShareCard, downloadYoutubeShareCard } from "@/lib/youtube-share-card"
 
 const SHARE_URL = "https://playbackstats.com"
 const SHARE_TITLE = "Check out this awesome YouTube History Visualizer! Analyze your YouTube watching habits with beautiful charts and insights."
@@ -34,13 +38,116 @@ function CustomRedditShareButton({ url, title, children }: { url: string; title:
   )
 }
 
-export default function SocialShare() {
+interface SocialShareProps {
+  stats: YoutubeStats
+}
+
+interface ShareCardPreview {
+  blob: Blob
+  url: string
+}
+
+export default function SocialShare({ stats }: SocialShareProps) {
+  const [downloadState, setDownloadState] = useState<"idle" | "working" | "done" | "error">("idle")
+  const [preview, setPreview] = useState<ShareCardPreview | null>(null)
+  const [previewError, setPreviewError] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+
+    void createYoutubeShareCard(stats)
+      .then(({ blob, previewUrl }) => {
+        if (cancelled) return
+        setPreviewError(false)
+        setPreview({ blob, url: previewUrl })
+      })
+      .catch((error) => {
+        console.error("Share card preview failed:", error)
+        if (!cancelled) setPreviewError(true)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [stats])
+
+  const handleDownload = () => {
+    if (!preview) return
+    setDownloadState("working")
+    try {
+      downloadYoutubeShareCard(preview.blob)
+      setDownloadState("done")
+    } catch (error) {
+      console.error("Share card download failed:", error)
+      setDownloadState("error")
+    }
+  }
+
   return (
     <div className="flex flex-col items-center gap-6 py-8 px-4">
+      <div className="w-full max-w-2xl overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-red-500/10 via-white/[0.025] to-emerald-300/[0.06] p-5 sm:p-6">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+          <div className="w-32 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-black/20 shadow-xl shadow-black/20 sm:w-36">
+            {preview ? (
+              <Image
+                src={preview.url}
+                alt="Preview of your locally generated YouTube share card"
+                width={216}
+                height={270}
+                unoptimized
+                className="h-auto w-full"
+              />
+            ) : (
+              <div className="flex aspect-[4/5] items-center justify-center text-zinc-500">
+                {previewError ? (
+                  <ImageIcon className="h-6 w-6" aria-hidden="true" />
+                ) : (
+                  <Loader2 className="h-6 w-6 animate-spin" aria-label="Preparing share card preview" />
+                )}
+              </div>
+            )}
+          </div>
+          <div className="flex flex-1 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-red-300/20 bg-red-500/15 text-red-200">
+                <ImageIcon className="h-5 w-5" aria-hidden="true" />
+              </div>
+              <h3 className="font-semibold text-white">Download your share card</h3>
+              <p className="mt-1 max-w-md text-sm leading-6 text-zinc-400">
+                Save a 4:5 PNG with four aggregate stats, the Playback Stats logo, and playbackstats.com.
+                Video titles and channel names are not included.
+              </p>
+            </div>
+            <Button
+              type="button"
+              onClick={handleDownload}
+              disabled={!preview || downloadState === "working"}
+              className="h-11 shrink-0 bg-white text-zinc-950 hover:bg-zinc-200"
+            >
+              {downloadState === "working" || !preview ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+              ) : downloadState === "done" ? (
+                <Check className="mr-2 h-4 w-4" aria-hidden="true" />
+              ) : (
+                <Download className="mr-2 h-4 w-4" aria-hidden="true" />
+              )}
+              {!preview ? "Preparing PNG…" : downloadState === "done" ? "Download again" : "Download PNG"}
+            </Button>
+          </div>
+        </div>
+        <p className={`mt-3 text-xs ${downloadState === "error" ? "text-red-300" : "text-zinc-500"}`} aria-live="polite">
+          {previewError || downloadState === "error"
+            ? "The browser could not download the image. Please try again."
+            : downloadState === "done"
+              ? "Share card downloaded. Attach it anywhere you choose."
+              : "Created entirely in this browser tab and never uploaded."}
+        </p>
+      </div>
+
       <div className="text-center space-y-2">
-        <h3 className="text-lg font-semibold">❤️ Love these insights?</h3>
+        <h3 className="text-lg font-semibold">Share Playback Stats</h3>
         <p className="text-sm text-muted-foreground">
-          Share with friends or support the developer!
+          These buttons share the public website only. Add your downloaded card to the post if you want.
         </p>
       </div>
       
