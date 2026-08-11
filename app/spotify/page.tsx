@@ -103,6 +103,11 @@ const exportSteps = [
 
 const faqs = [
   {
+    question: "Can I see Spotify stats without logging in?",
+    answer:
+      "Yes. Playback Stats does not require a login or connect to your Spotify account. You only sign in to Spotify separately when requesting your data export, then analyze the downloaded JSON files here.",
+  },
+  {
     question: "Does my Spotify data get uploaded?",
     answer:
       "No. JSON parsing and analysis happen inside this browser tab. There is no file-upload API, account connection, or server-side storage.",
@@ -131,6 +136,16 @@ const faqs = [
     question: "What if I import both standard and extended history?",
     answer:
       "The analyzer prefers the richer extended records and omits standard-history records that fall inside the same covered date range. Standard records outside that range can still extend the timeline.",
+  },
+  {
+    question: "How far back will my Spotify stats go?",
+    answer:
+      "The dashboard covers every valid music record in the files you select. Extended Streaming History is designed to cover the lifetime of your account, while the standard account-data export usually provides a smaller history.",
+  },
+  {
+    question: "What happens to my Spotify stats when I refresh?",
+    answer:
+      "The selected files and generated dashboard stay in this browser tab's memory only. Refreshing or closing the tab clears them, so you can select the export again whenever you want to rebuild the analysis.",
   },
 ]
 
