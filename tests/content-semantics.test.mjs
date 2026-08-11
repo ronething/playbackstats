@@ -12,6 +12,10 @@ const youtubeJsonGuide = readFileSync(
   new URL("../app/guides/youtube-watch-history-json/page.tsx", import.meta.url),
   "utf8",
 )
+const mostWatchedChannelsGuide = readFileSync(
+  new URL("../app/guides/how-to-see-most-watched-youtube-channels/page.tsx", import.meta.url),
+  "utf8",
+)
 const sitemap = readFileSync(new URL("../app/sitemap.ts", import.meta.url), "utf8")
 
 test("YouTube homepage does not present fabricated history as user data", () => {
@@ -20,6 +24,7 @@ test("YouTube homepage does not present fabricated history as user data", () => 
   assert.match(youtubePage, /What this YouTube history analyzer measures/)
   assert.match(youtubePage, /does not include dependable watch duration/)
   assert.match(youtubePage, /href="\/guides\/youtube-watch-history-json"/)
+  assert.match(youtubePage, /href="\/guides\/how-to-see-most-watched-youtube-channels"/)
 })
 
 test("Spotify page describes the input and calculations in visible content", () => {
@@ -37,5 +42,16 @@ test("YouTube JSON guide documents the supported Takeout fields and limitations"
   assert.match(youtubeJsonGuide, /ISO 8601 string/)
   assert.match(youtubeJsonGuide, /does not include reliable minutes watched/)
   assert.match(youtubeJsonGuide, /placeholder titles and URLs/)
+  assert.match(youtubeJsonGuide, /href="\/guides\/how-to-see-most-watched-youtube-channels"/)
   assert.match(sitemap, /guides\/youtube-watch-history-json/)
+})
+
+test("Most-watched channels guide explains frequency rankings without inventing watch time", () => {
+  assert.match(mostWatchedChannelsGuide, /How to See Your Most-Watched YouTube Channels/)
+  assert.match(mostWatchedChannelsGuide, /subtitles\[\]\.name/)
+  assert.match(mostWatchedChannelsGuide, /titleUrl/)
+  assert.match(mostWatchedChannelsGuide, /frequency rankings, not watch-time/)
+  assert.match(mostWatchedChannelsGuide, /href="\/guides\/youtube-watch-history-json"/)
+  assert.match(mostWatchedChannelsGuide, /href="\/#upload"/)
+  assert.match(sitemap, /guides\/how-to-see-most-watched-youtube-channels/)
 })

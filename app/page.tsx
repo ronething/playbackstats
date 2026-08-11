@@ -151,13 +151,22 @@ function AnalysisMethod() {
         <p className="mt-4 text-sm leading-7 text-zinc-400 sm:text-base">
           Google Takeout&apos;s <code className="font-mono text-red-200">watch-history.json</code> is a chronological list of viewing events. Playback Stats reads each valid video title, channel, and timestamp, then groups those records into useful comparisons without contacting YouTube or Google.
         </p>
-        <Link
-          href="/guides/youtube-watch-history-json"
-          className="mt-5 inline-flex items-center text-sm font-medium text-red-200 underline-offset-4 transition-colors hover:text-red-100 hover:underline"
-        >
-          Read the watch-history.json format and field guide
-          <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" aria-hidden="true" />
-        </Link>
+        <div className="mt-5 flex flex-col items-start gap-2 sm:flex-row sm:gap-5">
+          <Link
+            href="/guides/youtube-watch-history-json"
+            className="inline-flex items-center text-sm font-medium text-red-200 underline-offset-4 transition-colors hover:text-red-100 hover:underline"
+          >
+            Read the watch-history.json field guide
+            <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" aria-hidden="true" />
+          </Link>
+          <Link
+            href="/guides/how-to-see-most-watched-youtube-channels"
+            className="inline-flex items-center text-sm font-medium text-red-200 underline-offset-4 transition-colors hover:text-red-100 hover:underline"
+          >
+            See how channel rankings work
+            <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" aria-hidden="true" />
+          </Link>
+        </div>
       </div>
 
       <dl className="mt-8 grid gap-3 md:grid-cols-3">
