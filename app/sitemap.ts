@@ -1,14 +1,35 @@
 import { MetadataRoute } from "next"
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://playbackstats.com"
+const baseUrl = "https://playbackstats.com"
+const homeLanguages = {
+  en: baseUrl,
+  de: `${baseUrl}/de`,
+  fr: `${baseUrl}/fr`,
+  "x-default": baseUrl,
+}
 
+export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
       url: baseUrl,
-      lastModified: "2026-08-11",
+      lastModified: "2026-08-22",
       changeFrequency: "monthly",
       priority: 1.0,
+      alternates: { languages: homeLanguages },
+    },
+    {
+      url: `${baseUrl}/de`,
+      lastModified: "2026-08-22",
+      changeFrequency: "monthly",
+      priority: 0.9,
+      alternates: { languages: homeLanguages },
+    },
+    {
+      url: `${baseUrl}/fr`,
+      lastModified: "2026-08-22",
+      changeFrequency: "monthly",
+      priority: 0.9,
+      alternates: { languages: homeLanguages },
     },
     {
       url: `${baseUrl}/spotify`,

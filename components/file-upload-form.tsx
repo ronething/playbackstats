@@ -11,7 +11,6 @@ import { Card } from "@/components/ui/card"
 import { analyzeYoutubeHistory } from "@/lib/youtube-analysis"
 import { saveYoutubeDashboard } from "@/lib/youtube-dashboard-storage"
 import {
-  IMPORT_ERROR_GUIDANCE,
   YOUTUBE_IMPORT_LIMITS,
   YoutubeImportError,
   asYoutubeImportError,
@@ -21,6 +20,7 @@ import {
   type YoutubeImportErrorCode,
   type YoutubeInputFormat,
 } from "@/lib/youtube-import"
+import { getLandingContent, type Locale } from "@/lib/i18n"
 
 interface SelectedFile {
   file: File
@@ -31,8 +31,13 @@ function nextFrame(): Promise<void> {
   return new Promise((resolve) => window.requestAnimationFrame(() => resolve()))
 }
 
-export default function FileUploadForm() {
+interface FileUploadFormProps {
+  locale?: Locale
+}
+
+export default function FileUploadForm({ locale = "en" }: FileUploadFormProps) {
   const router = useRouter()
+  const content = getLandingContent(locale).upload
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [selection, setSelection] = useState<SelectedFile | null>(null)
   const [isDragging, setIsDragging] = useState(false)
@@ -42,7 +47,7 @@ export default function FileUploadForm() {
   const [error, setError] = useState<ImportErrorGuidance | null>(null)
 
   const reportFailure = (code: YoutubeImportErrorCode) => {
-    setError(IMPORT_ERROR_GUIDANCE[code])
+    setError(content.errors[code])
   }
 
   const validateAndSetFile = (file: File) => {
@@ -91,12 +96,12 @@ export default function FileUploadForm() {
     setIsProcessing(true)
     setError(null)
     setProgress(8)
-    setProgressStage(inputFormat === "takeout_zip" ? "Checking archive safety limits..." : "Reading JSON locally...")
+    setProgressStage(inputFormat === "takeout_zip" ? content.progress.archive : content.progress.json)
     try {
       await nextFrame()
       const parsed = await readYoutubeHistoryFile(file)
       setProgress(58)
-      setProgressStage("Building private viewing summaries...")
+      setProgressStage(content.progress.summaries)
       await nextFrame()
 
       let data
@@ -110,7 +115,7 @@ export default function FileUploadForm() {
       }
 
       setProgress(86)
-      setProgressStage("Saving this dashboard in the current tab...")
+      setProgressStage(content.progress.saving)
       await nextFrame()
       try {
         saveYoutubeDashboard(data, { inputFormat })
@@ -122,9 +127,9 @@ export default function FileUploadForm() {
       }
 
       setProgress(100)
-      setProgressStage("Opening your dashboard...")
+      setProgressStage(content.progress.opening)
       await nextFrame()
-      router.push("/dashboard")
+      router.push(locale === "en" ? "/dashboard" : `/dashboard?lang=${locale}`)
     } catch (processingError) {
       const importError = asYoutubeImportError(processingError)
       reportFailure(importError.code)
@@ -152,7 +157,7 @@ export default function FileUploadForm() {
           <div
             role="button"
             tabIndex={0}
-            aria-label="Choose a YouTube watch history JSON file or Google Takeout ZIP"
+            aria-label={content.chooseAriaLabel}
             className={`group relative cursor-pointer rounded-3xl border border-dashed p-7 text-center transition-all duration-300 sm:p-8 ${
               isDragging
                 ? "scale-[1.01] border-red-400 bg-red-500/10"
@@ -185,19 +190,19 @@ export default function FileUploadForm() {
               </div>
               <div className="space-y-2">
                 <h2 className="text-xl font-semibold text-white">
-                  {isDragging ? "Drop it here" : "Bring your YouTube history"}
+                  {isDragging ? content.dropTitle : content.idleTitle}
                 </h2>
                 <p className="text-sm leading-6 text-zinc-400">
-                  Drop the Takeout ZIP or JSON here, or <span className="font-medium text-red-300">choose a file</span>
+                  {content.descriptionStart} <span className="font-medium text-red-300">{content.chooseFile}</span>
                 </p>
               </div>
               <div className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-black/20 px-3 py-2 text-xs text-zinc-500">
                 <FileArchive className="h-3.5 w-3.5 text-red-300" aria-hidden="true" />
-                Takeout .zip or watch-history.json · up to 100 MB
+                {content.formats}
               </div>
               <div className="flex items-center gap-2 text-xs text-zinc-500">
                 <ShieldCheck className="h-3.5 w-3.5 text-red-300" aria-hidden="true" />
-                Archive checks, extraction, and analysis stay in this tab
+                {content.localNote}
               </div>
             </div>
             <input
@@ -224,12 +229,12 @@ export default function FileUploadForm() {
               </div>
               <div className="min-w-0">
                 <p className="truncate font-semibold">{file.name}</p>
-                <p className="text-sm text-zinc-400">{(file.size / (1024 * 1024)).toFixed(2)} MB · processed locally</p>
+                <p className="text-sm text-zinc-400">{(file.size / (1024 * 1024)).toFixed(2)} MB · {content.processedLocally}</p>
               </div>
             </div>
             <Button type="button" variant="ghost" size="icon" onClick={removeFile} disabled={isProcessing} className="shrink-0 rounded-full text-zinc-400 hover:bg-white/10 hover:text-white">
               <X className="h-4 w-4" />
-              <span className="sr-only">Remove file</span>
+              <span className="sr-only">{content.removeFile}</span>
             </Button>
           </div>
 
@@ -248,7 +253,7 @@ export default function FileUploadForm() {
             </div>
           ) : (
             <Button type="button" className="mt-5 h-12 w-full bg-red-500 text-base font-semibold text-white hover:bg-red-400" onClick={processFile}>
-              Analyze my watch history
+              {content.analyze}
               <span className="ml-2 text-lg" aria-hidden="true">→</span>
             </Button>
           )}
