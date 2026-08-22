@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import Script from 'next/script'
+import { headers } from 'next/headers'
 import PromoBanner from '@/components/promo-banner'
+import { getLandingContent, isLocale } from '@/lib/i18n'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://playbackstats.com'),
@@ -9,13 +11,18 @@ export const metadata: Metadata = {
   generator: 'Next.js',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const requestHeaders = await headers()
+  const requestedLocale = requestHeaders.get('x-playback-locale')
+  const locale = isLocale(requestedLocale) ? requestedLocale : 'en'
+  const content = getLandingContent(locale)
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <head>
         <Script
           defer
@@ -31,9 +38,9 @@ export default function RootLayout({
           href="#main-content"
           className="fixed left-4 top-4 z-[60] -translate-y-24 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-zinc-950 shadow-xl transition-transform focus:translate-y-0"
         >
-          Skip to content
+          {content.nav.skipToContent}
         </a>
-        <PromoBanner />
+        <PromoBanner locale={locale} />
         {children}
       </body>
     </html>
