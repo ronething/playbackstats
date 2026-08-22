@@ -15,6 +15,7 @@ interface LandingContent {
   meta: {
     title: string
     description: string
+    socialDescription: string
     ogLocale: string
   }
   promo: {
@@ -30,40 +31,31 @@ interface LandingContent {
     guide: string
     language: string
     skipToContent: string
-    productFacts: string
     github: string
   }
   hero: {
-    eyebrow: string
-    title: string
-    highlight: string
+    badge: string
+    titlePrefix: string
+    titleHighlight: string
     description: string
-    primaryAction: string
-    secondaryAction: string
     trustLine: string
-    panelEyebrow: string
-    panelTitle: string
-    panelDescription: string
-    fileLabel: string
-    dashboardLabel: string
   }
-  proof: Array<{ label: string; value: string }>
+  promises: Array<{ label: string; detail: string }>
   discoveries: {
     eyebrow: string
     title: string
     description: string
-    items: Array<{ index: string; title: string; description: string }>
+    items: Array<{ title: string; description: string }>
   }
   method: {
     eyebrow: string
     title: string
     description: string
-    steps: Array<{ title: string; description: string }>
-    limitationLabel: string
-    limitationTitle: string
-    limitationDescription: string
+    details: Array<{ title: string; description: string }>
     jsonGuide: string
     channelGuide: string
+    limitationTitle: string
+    limitationDescription: string
   }
   export: {
     eyebrow: string
@@ -74,22 +66,14 @@ interface LandingContent {
     steps: Array<{ title: string; description: string }>
   }
   privacy: {
-    eyebrow: string
     title: string
     description: string
-    facts: Array<{ title: string; description: string }>
+    facts: Array<{ title: string; detail: string }>
   }
   faq: {
     eyebrow: string
     title: string
     items: Array<{ question: string; answer: string }>
-  }
-  finalCta: {
-    eyebrow: string
-    title: string
-    description: string
-    action: string
-    localPrivate: string
   }
   footer: {
     privacyStatement: string
@@ -133,7 +117,8 @@ export const landingContent: Record<Locale, LandingContent> = {
     meta: {
       title: "YouTube Watch History Analyzer & Stats | Playback Stats",
       description:
-        "Analyze your YouTube watch history from Google Takeout. Discover top channels, repeat videos, streaks, and viewing patterns privately in your browser.",
+        "Import a Google Takeout ZIP or watch-history.json to analyze YouTube viewing stats, top channels, streaks, and trends—privately in your browser.",
+      socialDescription: "Analyze your YouTube watch history from Google Takeout with private viewing stats, channel rankings, streaks, and trends.",
       ogLocale: "en_US",
     },
     promo: {
@@ -149,141 +134,83 @@ export const landingContent: Record<Locale, LandingContent> = {
       guide: "Export guide",
       language: "Language",
       skipToContent: "Skip to content",
-      productFacts: "Product facts",
       github: "View Playback Stats on GitHub",
     },
     hero: {
-      eyebrow: "Your private viewing archive",
-      title: "A YouTube watch history analyzer that turns old views into",
-      highlight: "clear patterns.",
+      badge: "100% local — your file never leaves this browser",
+      titlePrefix: "Analyze your",
+      titleHighlight: "YouTube watch history",
       description:
-        "Bring a Google Takeout ZIP or watch-history.json. Playback Stats reveals your top channels, repeat favorites, active days, and viewing rhythms without uploading the file.",
-      primaryAction: "Analyze my history",
-      secondaryAction: "See how it works",
-      trustLine: "No YouTube login · no API key · no server upload",
-      panelEyebrow: "Local analysis room",
-      panelTitle: "Your file stays in this tab.",
-      panelDescription: "Choose the original Takeout archive or its YouTube watch-history JSON file.",
-      fileLabel: "File",
-      dashboardLabel: "Local dashboard",
+        "Import your Google Takeout ZIP or watch-history.json to explore viewing stats, top channels, routines, and repeat favorites without sending the file to a server.",
+      trustLine: "No YouTube login, API key, or server upload. Your browser builds a compact dashboard from the exported JSON.",
     },
-    proof: [
-      { label: "Processing", value: "100% in your browser" },
-      { label: "Accepted files", value: "Takeout ZIP + JSON" },
-      { label: "Account needed", value: "None" },
-      { label: "Result", value: "A private dashboard" },
+    promises: [
+      { label: "Your timeline", detail: "Daily activity across your export" },
+      { label: "Your channels", detail: "Creators ranked by repeat views" },
+      { label: "Your rhythm", detail: "Hours, streaks, and viewing habits" },
     ],
     discoveries: {
-      eyebrow: "Inside the archive",
-      title: "Not more data. A better view of the data you already own.",
-      description:
-        "Playback Stats organizes valid viewing events into comparisons that are easy to scan and honest about what the export can prove.",
+      eyebrow: "Inside your history",
+      title: "YouTube watch history stats, with context",
+      description: "This YouTube history analyzer turns your export into patterns you can scan, compare, and understand.",
       items: [
-        {
-          index: "01",
-          title: "Viewing trends",
-          description: "Follow daily and monthly activity across the full date range in your export.",
-        },
-        {
-          index: "02",
-          title: "Top channels",
-          description: "Rank creators by recorded views and see how concentrated your viewing is.",
-        },
-        {
-          index: "03",
-          title: "Repeat favorites",
-          description: "Find the videos you returned to most often, based on real history entries.",
-        },
-        {
-          index: "04",
-          title: "Personal rhythms",
-          description: "See your busiest weekday, peak hour, active streaks, and long-term habits.",
-        },
+        { title: "Viewing trends", description: "Follow how your viewing changes over days, months, and the full life of your Google history." },
+        { title: "Repeat favorites", description: "Find the videos and channels you returned to, with rankings grounded in your own history." },
+        { title: "Personal patterns", description: "See your peak hour, favorite day, longest streak, and the shape of your viewing personality." },
+        { title: "Private by design", description: "The browser keeps only compact chart data. Your original Takeout file never reaches a server." },
       ],
     },
     method: {
-      eyebrow: "Transparent by design",
-      title: "From export to insight, without a detour through our servers.",
+      eyebrow: "How the analysis works",
+      title: "What this YouTube history analyzer measures",
       description:
-        "Google Takeout provides a chronological list of viewing events. Playback Stats reads the supported fields, removes unusable rows, and creates compact chart data locally.",
-      steps: [
-        { title: "Export", description: "You download your own YouTube history from Google Takeout." },
-        { title: "Read locally", description: "This browser tab opens the file and validates supported viewing records." },
-        { title: "Explore", description: "A compact dashboard groups dates, videos, channels, and viewing patterns." },
+        "Google Takeout's watch-history.json is a chronological list of viewing events. Playback Stats reads each valid video title, channel, and timestamp, then groups those records into useful comparisons without contacting YouTube or Google.",
+      details: [
+        { title: "Viewing activity", description: "Count watch events by day, month, weekday, and hour to see when your YouTube activity rises or falls." },
+        { title: "Videos and channels", description: "Rank repeat videos, compare channel frequency, and measure how concentrated or varied your viewing history is." },
+        { title: "Habits over time", description: "Find your first recorded video, busiest day, peak viewing hour, favorite weekday, and longest active streak." },
       ],
-      limitationLabel: "Important limitation",
-      limitationTitle: "Views are not watch time.",
-      limitationDescription:
-        "YouTube watch-history exports do not include dependable minutes watched for each event. Playback Stats reports recorded views and activity patterns instead of inventing a total watch-time estimate.",
       jsonGuide: "Read the watch-history.json field guide",
       channelGuide: "See how channel rankings work",
+      limitationTitle: "A deliberate limitation",
+      limitationDescription:
+        "YouTube's export does not include dependable watch duration for each history event. The dashboard therefore reports views and viewing patterns, not a made-up total watch-time number.",
     },
     export: {
-      eyebrow: "Four simple steps",
-      title: "How to export your YouTube watch history",
-      description:
-        "Use Google Takeout to create a copy of your history without granting Playback Stats access to your Google account.",
+      eyebrow: "Bring your own data",
+      title: "How to export YouTube history",
+      description: "Google Takeout lets you download watch history without granting this site access to your account.",
       action: "Open Google Takeout",
-      guideAction: "View the detailed JSON guide",
+      guideAction: "See what is inside watch-history.json",
       steps: [
         { title: "Open Google Takeout", description: "Sign in, deselect everything, then choose YouTube and YouTube Music." },
-        { title: "Keep history only", description: "Open the included-data options and leave only history selected." },
-        { title: "Download the export", description: "Keep the ZIP intact, or locate history/watch-history.json inside it." },
-        { title: "Analyze it here", description: "Choose the ZIP or JSON above. Processing runs inside this browser tab." },
+        { title: "Keep history only", description: "Open the included-data options and leave only history selected before creating the export." },
+        { title: "Download the export", description: "Keep the ZIP intact, or unzip it and locate history/watch-history.json inside the YouTube folder." },
+        { title: "Explore locally", description: "Choose the Takeout ZIP or watch-history.json here. Parsing and analysis run inside this browser tab." },
       ],
     },
     privacy: {
-      eyebrow: "Privacy is the product",
-      title: "Personal history should stay personal.",
+      title: "Personal data should stay personal",
       description:
-        "The original Takeout file never reaches Playback Stats. Only compact dashboard summaries remain in the current browser session, and closing it clears them.",
+        "The original Takeout file is read locally and never sent to Playback Stats. Only compact dashboard summaries are stored for the current browser session.",
       facts: [
-        { title: "Browser only", description: "There is no history-file upload endpoint." },
-        { title: "Session only", description: "Close the tab to clear the compact dashboard." },
-        { title: "Open source", description: "Inspect the parsing and analysis rules yourself." },
+        { title: "Browser only", detail: "No upload endpoint" },
+        { title: "Session only", detail: "Close to clear" },
+        { title: "Open source", detail: "Inspect every rule" },
       ],
     },
     faq: {
       eyebrow: "Good to know",
-      title: "YouTube watch history analyzer FAQ",
+      title: "YouTube history analyzer FAQ",
       items: [
-        {
-          question: "How do I see my YouTube stats as a viewer?",
-          answer:
-            "Export YouTube and YouTube Music history with Google Takeout, then choose the Takeout ZIP or watch-history.json here. Playback Stats converts valid viewer records into channel rankings, trends, streaks, and personal patterns without connecting to your YouTube account.",
-        },
-        {
-          question: "How do I see my most-watched YouTube channels?",
-          answer:
-            "Import your Takeout history and Playback Stats will group valid viewing events by channel. The result is a frequency ranking based on recorded views, not an invented watch-time total.",
-        },
-        {
-          question: "Does my YouTube history get uploaded?",
-          answer: "No. The file is read and summarized locally in your browser. Playback Stats has no upload endpoint for history files.",
-        },
-        {
-          question: "How far back will the dashboard go?",
-          answer:
-            "It goes back to the earliest valid record in your export. It cannot recover periods when YouTube History was paused, items you deleted or Google removed through auto-delete, or records excluded by your activity settings.",
-        },
-        {
-          question: "Can this calculate my total YouTube watch time?",
-          answer:
-            "No. Takeout records when a video was watched but does not provide reliable minutes watched for each event. Playback Stats reports viewing activity rather than making up a watch-time estimate.",
-        },
-        {
-          question: "Why might the totals differ from YouTube?",
-          answer:
-            "Only valid records present in the exported JSON can be counted. Deleted or paused history, private or unavailable videos, auto-delete, and activity-setting changes can affect the export.",
-        },
+        { question: "How do I see my YouTube stats as a viewer?", answer: "Export your YouTube and YouTube Music history with Google Takeout, then select the Takeout ZIP or resulting watch-history.json file here. Playback Stats turns those viewer records into channel rankings, viewing trends, streaks, and other personal stats without connecting to your YouTube account." },
+        { question: "Does my YouTube history get uploaded?", answer: "No. The file is read and summarized locally in your browser. Playback Stats has no upload endpoint for history files." },
+        { question: "Do I need a Google or Playback Stats login?", answer: "No. Export the file from Google Takeout, then analyze it without connecting an account or API key." },
+        { question: "How far back will the dashboard go?", answer: "The dashboard goes back to the earliest valid watch record in your export. It cannot recover activity from periods when YouTube History was paused, items you deleted or Google removed through auto-delete, or records excluded by your Google activity settings." },
+        { question: "What happens when I refresh?", answer: "The original file is never retained. Compact YouTube dashboard data stays only in this browser session and can be cleared by closing it." },
+        { question: "Can this calculate my total YouTube watch time?", answer: "No. Google Takeout watch history records when a video was watched, but it does not provide reliable minutes watched for each event. Playback Stats reports viewing activity rather than inventing a watch-time estimate." },
+        { question: "Why might the totals differ from YouTube itself?", answer: "The analyzer can only count valid records present in the exported JSON. Deleted history, paused history, private or unavailable videos, and changes to your Google activity settings can affect what the export contains." },
       ],
-    },
-    finalCta: {
-      eyebrow: "Ready when you are",
-      title: "Your viewing story is already in the file.",
-      description: "Open it privately and turn years of watch history into something you can actually understand.",
-      action: "Choose my history file",
-      localPrivate: "Local / private",
     },
     footer: {
       privacyStatement: "Your history stays on your device",
@@ -311,44 +238,20 @@ export const landingContent: Record<Locale, LandingContent> = {
         opening: "Opening your dashboard...",
       },
       errors: {
-        unsupported_format: {
-          title: "This file type is not supported",
-          message: "Choose a Google Takeout viewing-history JSON file or the original Takeout ZIP archive.",
-          action: "Use a .json or .zip file and keep the export unmodified.",
-        },
-        malformed_json: {
-          title: "The history JSON is damaged",
-          message: "The file could not be decoded as valid JSON.",
-          action: "Download the Takeout export again, or choose the original ZIP so Playback Stats can locate the file.",
-        },
-        incorrect_takeout_path: {
-          title: "YouTube watch history was not found",
-          message: "This looks like a different export file, or the ZIP does not contain recognizable YouTube viewing history.",
-          action: "In Takeout, include YouTube and YouTube Music history, then import the ZIP or its viewing-history JSON file.",
-        },
-        empty_history: {
-          title: "No viewing records were found",
-          message: "The selected history is empty or contains no supported YouTube viewing events.",
-          action: "Check that watch history was enabled and that the export contains the dates you expect.",
-        },
-        memory_exhaustion: {
-          title: "This export is too large to process safely",
-          message: "The file or archive exceeds a local safety limit, or this browser ran out of memory.",
-          action: "Create a smaller Takeout export, close other tabs, or use a desktop browser with more available memory.",
-        },
-        browser_failure: {
-          title: "The browser could not read this export",
-          message: "A local browser or storage operation failed before the dashboard was ready.",
-          action: "Try again in an up-to-date browser. Your selected file was not uploaded.",
-        },
+        unsupported_format: { title: "This file type is not supported", message: "Choose a Google Takeout viewing-history JSON file or the original Takeout ZIP archive.", action: "Use a .json or .zip file and keep the export unmodified." },
+        malformed_json: { title: "The history JSON is damaged", message: "The file could not be decoded as valid JSON.", action: "Download the Takeout export again, or choose the original ZIP so Playback Stats can locate the file." },
+        incorrect_takeout_path: { title: "YouTube watch history was not found", message: "This looks like a different export file, or the ZIP does not contain recognizable YouTube viewing history.", action: "In Takeout, include YouTube and YouTube Music history, then import the ZIP or its viewing-history JSON file." },
+        empty_history: { title: "No viewing records were found", message: "The selected history is empty or contains no supported YouTube viewing events.", action: "Check that watch history was enabled and that the export contains the dates you expect." },
+        memory_exhaustion: { title: "This export is too large to process safely", message: "The file or archive exceeds a local safety limit, or this browser ran out of memory.", action: "Create a smaller Takeout export, close other tabs, or use a desktop browser with more available memory." },
+        browser_failure: { title: "The browser could not read this export", message: "A local browser or storage operation failed before the dashboard was ready.", action: "Try again in an up-to-date browser. Your selected file was not uploaded." },
       },
     },
   },
   de: {
     meta: {
       title: "YouTube-Wiedergabeverlauf analysieren | Playback Stats",
-      description:
-        "Analysiere deinen YouTube-Wiedergabeverlauf aus Google Takeout. Entdecke Top-Kanäle, wiederholte Videos, Serien und Sehgewohnheiten – privat im Browser.",
+      description: "Importiere eine Google-Takeout-ZIP oder watch-history.json und analysiere YouTube-Statistiken, Top-Kanäle, Serien und Trends privat im Browser.",
+      socialDescription: "Analysiere deinen YouTube-Wiedergabeverlauf aus Google Takeout mit privaten Statistiken, Kanal-Rankings, Serien und Trends.",
       ogLocale: "de_DE",
     },
     promo: {
@@ -364,122 +267,79 @@ export const landingContent: Record<Locale, LandingContent> = {
       guide: "Export-Anleitung",
       language: "Sprache",
       skipToContent: "Zum Inhalt springen",
-      productFacts: "Produktmerkmale",
       github: "Playback Stats auf GitHub ansehen",
     },
     hero: {
-      eyebrow: "Dein privates Wiedergabearchiv",
-      title: "Ein Analyzer für deinen YouTube-Wiedergabeverlauf, der alte Aufrufe in",
-      highlight: "klare Muster verwandelt.",
-      description:
-        "Importiere eine Google-Takeout-ZIP oder watch-history.json. Playback Stats zeigt Top-Kanäle, wiederholte Favoriten, aktive Tage und Sehgewohnheiten, ohne die Datei hochzuladen.",
-      primaryAction: "Verlauf analysieren",
-      secondaryAction: "So funktioniert es",
-      trustLine: "Kein YouTube-Login · kein API-Schlüssel · kein Server-Upload",
-      panelEyebrow: "Lokaler Analyseraum",
-      panelTitle: "Deine Datei bleibt in diesem Tab.",
-      panelDescription: "Wähle das ursprüngliche Takeout-Archiv oder die YouTube-Datei watch-history.json.",
-      fileLabel: "Datei",
-      dashboardLabel: "Lokales Dashboard",
+      badge: "100 % lokal — deine Datei verlässt diesen Browser nie",
+      titlePrefix: "Analysiere deinen",
+      titleHighlight: "YouTube-Wiedergabeverlauf",
+      description: "Importiere deine Google-Takeout-ZIP oder watch-history.json und entdecke Statistiken, Top-Kanäle, Routinen und wiederholte Favoriten, ohne die Datei an einen Server zu senden.",
+      trustLine: "Kein YouTube-Login, API-Schlüssel oder Server-Upload. Dein Browser erstellt aus dem exportierten JSON ein kompaktes Dashboard.",
     },
-    proof: [
-      { label: "Verarbeitung", value: "100 % in deinem Browser" },
-      { label: "Dateiformate", value: "Takeout-ZIP + JSON" },
-      { label: "Konto erforderlich", value: "Nein" },
-      { label: "Ergebnis", value: "Privates Dashboard" },
+    promises: [
+      { label: "Deine Zeitleiste", detail: "Tägliche Aktivität im gesamten Export" },
+      { label: "Deine Kanäle", detail: "Creator nach wiederholten Aufrufen sortiert" },
+      { label: "Dein Rhythmus", detail: "Uhrzeiten, Serien und Sehgewohnheiten" },
     ],
     discoveries: {
-      eyebrow: "Im Archiv",
-      title: "Nicht mehr Daten. Sondern ein besserer Blick auf deine eigenen.",
-      description:
-        "Playback Stats ordnet gültige Wiedergabeereignisse in verständliche Vergleiche ein und zeigt ehrlich, was der Export belegen kann.",
+      eyebrow: "In deinem Verlauf",
+      title: "YouTube-Verlaufsstatistiken mit Kontext",
+      description: "Dieser YouTube-Verlaufs-Analyzer verwandelt deinen Export in Muster, die du überblicken, vergleichen und verstehen kannst.",
       items: [
-        { index: "01", title: "Wiedergabetrends", description: "Verfolge tägliche und monatliche Aktivität über den gesamten Exportzeitraum." },
-        { index: "02", title: "Top-Kanäle", description: "Ordne Creator nach erfassten Aufrufen und erkenne, wie vielfältig dein Verlauf ist." },
-        { index: "03", title: "Wiederholte Favoriten", description: "Finde Videos, zu denen du laut deinen echten Verlaufseinträgen zurückgekehrt bist." },
-        { index: "04", title: "Persönliche Rhythmen", description: "Entdecke deinen aktivsten Wochentag, Spitzenzeiten, Serien und langfristige Gewohnheiten." },
+        { title: "Wiedergabetrends", description: "Verfolge, wie sich deine Nutzung über Tage, Monate und den gesamten Google-Verlauf verändert." },
+        { title: "Wiederholte Favoriten", description: "Finde Videos und Kanäle, zu denen du zurückgekehrt bist – auf Basis deines eigenen Verlaufs." },
+        { title: "Persönliche Muster", description: "Entdecke Spitzenzeiten, Lieblingstage, längste Serien und die Form deiner Sehgewohnheiten." },
+        { title: "Privat konzipiert", description: "Der Browser speichert nur kompakte Diagrammdaten. Deine ursprüngliche Takeout-Datei erreicht keinen Server." },
       ],
     },
     method: {
-      eyebrow: "Bewusst transparent",
-      title: "Vom Export zur Erkenntnis – ohne Umweg über unsere Server.",
-      description:
-        "Google Takeout liefert eine chronologische Liste von Wiedergabeereignissen. Playback Stats liest unterstützte Felder, entfernt unbrauchbare Einträge und erstellt die Diagrammdaten lokal.",
-      steps: [
-        { title: "Exportieren", description: "Du lädst deinen eigenen YouTube-Verlauf über Google Takeout herunter." },
-        { title: "Lokal lesen", description: "Dieser Browser-Tab öffnet die Datei und prüft unterstützte Wiedergabeeinträge." },
-        { title: "Entdecken", description: "Ein kompaktes Dashboard gruppiert Daten, Videos, Kanäle und Sehgewohnheiten." },
+      eyebrow: "So funktioniert die Analyse",
+      title: "Was dieser YouTube-Verlaufs-Analyzer misst",
+      description: "Google Takeouts watch-history.json ist eine chronologische Liste von Wiedergabeereignissen. Playback Stats liest gültige Videotitel, Kanäle und Zeitstempel und gruppiert sie in nützliche Vergleiche, ohne YouTube oder Google zu kontaktieren.",
+      details: [
+        { title: "Wiedergabeaktivität", description: "Zähle Ereignisse nach Tag, Monat, Wochentag und Stunde, um Veränderungen deiner YouTube-Aktivität zu erkennen." },
+        { title: "Videos und Kanäle", description: "Ordne wiederholte Videos, vergleiche Kanalhäufigkeiten und erkenne, wie vielfältig dein Verlauf ist." },
+        { title: "Gewohnheiten im Zeitverlauf", description: "Finde dein erstes Video, den aktivsten Tag, die Spitzenzeit, den Lieblingswochentag und die längste aktive Serie." },
       ],
-      limitationLabel: "Wichtige Einschränkung",
-      limitationTitle: "Aufrufe sind keine Wiedergabezeit.",
-      limitationDescription:
-        "YouTube-Verlaufsexporte enthalten keine verlässlichen Wiedergabeminuten pro Ereignis. Playback Stats zeigt erfasste Aufrufe und Aktivitätsmuster, statt eine Gesamtzeit zu erfinden.",
       jsonGuide: "Feldbeschreibung für watch-history.json lesen",
       channelGuide: "So funktionieren Kanal-Rankings",
+      limitationTitle: "Eine bewusste Einschränkung",
+      limitationDescription: "YouTubes Export enthält keine verlässliche Wiedergabedauer für einzelne Verlaufsereignisse. Das Dashboard zeigt daher Aufrufe und Muster statt einer erfundenen Gesamtwiedergabezeit.",
     },
     export: {
-      eyebrow: "Vier einfache Schritte",
-      title: "So exportierst du deinen YouTube-Wiedergabeverlauf",
-      description:
-        "Erstelle mit Google Takeout eine Kopie deines Verlaufs, ohne Playback Stats Zugriff auf dein Google-Konto zu geben.",
+      eyebrow: "Deine eigenen Daten",
+      title: "So exportierst du deinen YouTube-Verlauf",
+      description: "Mit Google Takeout kannst du deinen Wiedergabeverlauf herunterladen, ohne dieser Website Zugriff auf dein Konto zu geben.",
       action: "Google Takeout öffnen",
-      guideAction: "Ausführliche JSON-Anleitung ansehen",
+      guideAction: "Inhalt von watch-history.json ansehen",
       steps: [
         { title: "Google Takeout öffnen", description: "Melde dich an, wähle alles ab und dann YouTube und YouTube Music aus." },
-        { title: "Nur Verlauf behalten", description: "Öffne die Datenoptionen und lasse nur den Verlauf ausgewählt." },
-        { title: "Export herunterladen", description: "Behalte die ZIP-Datei oder suche darin history/watch-history.json." },
-        { title: "Hier analysieren", description: "Wähle oben ZIP oder JSON. Die Verarbeitung läuft in diesem Browser-Tab." },
+        { title: "Nur Verlauf behalten", description: "Öffne die Optionen für enthaltene Daten und lasse vor dem Export nur den Verlauf ausgewählt." },
+        { title: "Export herunterladen", description: "Behalte die ZIP-Datei oder entpacke sie und suche history/watch-history.json im YouTube-Ordner." },
+        { title: "Lokal entdecken", description: "Wähle hier die Takeout-ZIP oder watch-history.json. Import und Analyse laufen in diesem Browser-Tab." },
       ],
     },
     privacy: {
-      eyebrow: "Datenschutz ist das Produkt",
-      title: "Persönlicher Verlauf sollte persönlich bleiben.",
-      description:
-        "Die ursprüngliche Takeout-Datei erreicht Playback Stats nie. Nur kompakte Dashboard-Daten bleiben in der aktuellen Browsersitzung; beim Schließen werden sie gelöscht.",
+      title: "Persönliche Daten sollten persönlich bleiben",
+      description: "Die ursprüngliche Takeout-Datei wird lokal gelesen und nie an Playback Stats gesendet. Nur kompakte Dashboard-Zusammenfassungen bleiben in der aktuellen Browsersitzung.",
       facts: [
-        { title: "Nur im Browser", description: "Es gibt keinen Upload-Endpunkt für Verlaufsdateien." },
-        { title: "Nur diese Sitzung", description: "Schließe den Tab, um das kompakte Dashboard zu löschen." },
-        { title: "Open Source", description: "Prüfe die Regeln für Import und Analyse selbst." },
+        { title: "Nur im Browser", detail: "Kein Upload-Endpunkt" },
+        { title: "Nur diese Sitzung", detail: "Schließen zum Löschen" },
+        { title: "Open Source", detail: "Jede Regel einsehbar" },
       ],
     },
     faq: {
       eyebrow: "Gut zu wissen",
-      title: "FAQ zur YouTube-Verlauf-Analyse",
+      title: "FAQ zur YouTube-Verlaufsanalyse",
       items: [
-        {
-          question: "Wie kann ich meine YouTube-Statistiken als Zuschauer sehen?",
-          answer:
-            "Exportiere deinen YouTube- und YouTube-Music-Verlauf mit Google Takeout und wähle hier die Takeout-ZIP oder watch-history.json. Playback Stats erstellt daraus Kanal-Rankings, Trends, Serien und persönliche Muster, ohne dein YouTube-Konto zu verbinden.",
-        },
-        {
-          question: "Wie sehe ich meine meistgesehenen YouTube-Kanäle?",
-          answer:
-            "Importiere deinen Takeout-Verlauf. Playback Stats gruppiert gültige Wiedergabeereignisse nach Kanal und erstellt daraus eine Häufigkeitsrangliste auf Basis erfasster Aufrufe, nicht einer erfundenen Wiedergabezeit.",
-        },
+        { question: "Wie kann ich meine YouTube-Statistiken als Zuschauer sehen?", answer: "Exportiere deinen YouTube- und YouTube-Music-Verlauf mit Google Takeout und wähle hier die Takeout-ZIP oder watch-history.json aus. Playback Stats erstellt daraus Kanal-Rankings, Trends, Serien und persönliche Statistiken, ohne dein YouTube-Konto zu verbinden." },
         { question: "Wird mein YouTube-Verlauf hochgeladen?", answer: "Nein. Die Datei wird lokal in deinem Browser gelesen und zusammengefasst. Playback Stats besitzt keinen Upload-Endpunkt für Verlaufsdateien." },
-        {
-          question: "Wie weit reicht das Dashboard zurück?",
-          answer:
-            "Bis zum frühesten gültigen Eintrag im Export. Zeiträume mit pausiertem YouTube-Verlauf, gelöschte oder automatisch entfernte Einträge und durch Aktivitätseinstellungen ausgeschlossene Daten lassen sich nicht wiederherstellen.",
-        },
-        {
-          question: "Kann die gesamte YouTube-Wiedergabezeit berechnet werden?",
-          answer:
-            "Nein. Takeout erfasst, wann ein Video angesehen wurde, aber keine verlässlichen Wiedergabeminuten pro Ereignis. Playback Stats zeigt Aktivität, statt eine Wiedergabezeit zu erfinden.",
-        },
-        {
-          question: "Warum können die Summen von YouTube abweichen?",
-          answer:
-            "Gezählt werden nur gültige Datensätze im exportierten JSON. Gelöschter oder pausierter Verlauf, private oder nicht verfügbare Videos, automatische Löschung und geänderte Einstellungen beeinflussen den Export.",
-        },
+        { question: "Brauche ich ein Google- oder Playback-Stats-Login?", answer: "Nein. Exportiere die Datei über Google Takeout und analysiere sie ohne Kontoanbindung oder API-Schlüssel." },
+        { question: "Wie weit reicht das Dashboard zurück?", answer: "Bis zum frühesten gültigen Eintrag im Export. Zeiträume mit pausiertem YouTube-Verlauf, gelöschte oder automatisch entfernte Einträge und durch Aktivitätseinstellungen ausgeschlossene Daten lassen sich nicht wiederherstellen." },
+        { question: "Was passiert beim Aktualisieren?", answer: "Die Originaldatei wird nie gespeichert. Kompakte Dashboard-Daten bleiben nur in dieser Browsersitzung und lassen sich durch Schließen löschen." },
+        { question: "Kann die gesamte YouTube-Wiedergabezeit berechnet werden?", answer: "Nein. Google Takeout erfasst, wann ein Video angesehen wurde, aber keine verlässlichen Minuten pro Ereignis. Playback Stats zeigt Aktivität, statt eine Wiedergabezeit zu erfinden." },
+        { question: "Warum können die Summen von YouTube abweichen?", answer: "Gezählt werden nur gültige Datensätze im exportierten JSON. Gelöschter oder pausierter Verlauf, private oder nicht verfügbare Videos und geänderte Aktivitätseinstellungen beeinflussen den Export." },
       ],
-    },
-    finalCta: {
-      eyebrow: "Wenn du bereit bist",
-      title: "Deine Wiedergabegeschichte steckt bereits in der Datei.",
-      description: "Öffne sie privat und verwandle Jahre deines Verlaufs in etwas, das du wirklich verstehen kannst.",
-      action: "Verlaufsdatei auswählen",
-      localPrivate: "Lokal / privat",
     },
     footer: {
       privacyStatement: "Dein Verlauf bleibt auf deinem Gerät",
@@ -519,8 +379,8 @@ export const landingContent: Record<Locale, LandingContent> = {
   fr: {
     meta: {
       title: "Analyser l’historique YouTube et vos statistiques | Playback Stats",
-      description:
-        "Analysez votre historique YouTube depuis Google Takeout. Découvrez vos chaînes préférées, vidéos répétées, séries et habitudes, en privé dans votre navigateur.",
+      description: "Importez une archive Google Takeout ou watch-history.json pour analyser vos statistiques YouTube, chaînes favorites, séries et tendances en privé dans votre navigateur.",
+      socialDescription: "Analysez votre historique YouTube depuis Google Takeout avec des statistiques privées, classements de chaînes, séries et tendances.",
       ogLocale: "fr_FR",
     },
     promo: {
@@ -536,122 +396,79 @@ export const landingContent: Record<Locale, LandingContent> = {
       guide: "Guide d’export",
       language: "Langue",
       skipToContent: "Aller au contenu",
-      productFacts: "Caractéristiques du produit",
       github: "Voir Playback Stats sur GitHub",
     },
     hero: {
-      eyebrow: "Vos archives de visionnage privées",
-      title: "Un analyseur d’historique YouTube qui transforme vos anciennes vues en",
-      highlight: "tendances claires.",
-      description:
-        "Importez une archive Google Takeout ou watch-history.json. Playback Stats révèle vos chaînes favorites, vidéos revues, jours actifs et habitudes sans téléverser le fichier.",
-      primaryAction: "Analyser mon historique",
-      secondaryAction: "Voir le fonctionnement",
-      trustLine: "Sans connexion YouTube · sans clé API · sans envoi au serveur",
-      panelEyebrow: "Espace d’analyse local",
-      panelTitle: "Votre fichier reste dans cet onglet.",
-      panelDescription: "Choisissez l’archive Takeout originale ou son fichier YouTube watch-history.json.",
-      fileLabel: "Fichier",
-      dashboardLabel: "Tableau de bord local",
+      badge: "100 % local — votre fichier ne quitte jamais ce navigateur",
+      titlePrefix: "Analysez votre",
+      titleHighlight: "historique YouTube",
+      description: "Importez votre archive Google Takeout ou watch-history.json pour explorer statistiques, chaînes favorites, habitudes et vidéos revues sans envoyer le fichier à un serveur.",
+      trustLine: "Sans connexion YouTube, clé API ni envoi au serveur. Votre navigateur crée un tableau de bord compact depuis le JSON exporté.",
     },
-    proof: [
-      { label: "Traitement", value: "100 % dans votre navigateur" },
-      { label: "Fichiers acceptés", value: "Archive Takeout + JSON" },
-      { label: "Compte nécessaire", value: "Aucun" },
-      { label: "Résultat", value: "Tableau de bord privé" },
+    promises: [
+      { label: "Votre chronologie", detail: "Activité quotidienne sur tout l’export" },
+      { label: "Vos chaînes", detail: "Créateurs classés par vues répétées" },
+      { label: "Votre rythme", detail: "Heures, séries et habitudes de visionnage" },
     ],
     discoveries: {
-      eyebrow: "Dans vos archives",
-      title: "Pas plus de données. Une meilleure lecture de celles qui vous appartiennent.",
-      description:
-        "Playback Stats organise les événements valides en comparaisons faciles à lire et reste transparent sur ce que l’export permet réellement de prouver.",
+      eyebrow: "Dans votre historique",
+      title: "Les statistiques de votre historique YouTube, avec leur contexte",
+      description: "Cet analyseur transforme votre export YouTube en tendances faciles à parcourir, comparer et comprendre.",
       items: [
-        { index: "01", title: "Tendances de visionnage", description: "Suivez l’activité quotidienne et mensuelle sur toute la période de votre export." },
-        { index: "02", title: "Chaînes favorites", description: "Classez les créateurs par vues enregistrées et mesurez la diversité de votre historique." },
-        { index: "03", title: "Vidéos revues", description: "Retrouvez les vidéos auxquelles vous êtes revenu selon les entrées réelles de l’historique." },
-        { index: "04", title: "Rythmes personnels", description: "Découvrez votre jour le plus actif, vos heures de pointe, séries et habitudes à long terme." },
+        { title: "Tendances de visionnage", description: "Suivez l’évolution de vos visionnages au fil des jours, des mois et de tout votre historique Google." },
+        { title: "Vidéos favorites", description: "Retrouvez les vidéos et chaînes que vous avez revues, avec un classement fondé sur votre historique." },
+        { title: "Habitudes personnelles", description: "Découvrez votre heure de pointe, votre jour favori, votre plus longue série et vos habitudes." },
+        { title: "Privé par conception", description: "Le navigateur ne conserve que des données graphiques compactes. Votre fichier Takeout original n’atteint jamais un serveur." },
       ],
     },
     method: {
-      eyebrow: "Transparent par nature",
-      title: "De l’export aux enseignements, sans détour par nos serveurs.",
-      description:
-        "Google Takeout fournit une liste chronologique des visionnages. Playback Stats lit les champs pris en charge, écarte les lignes inutilisables et crée les données des graphiques localement.",
-      steps: [
-        { title: "Exporter", description: "Vous téléchargez votre propre historique YouTube avec Google Takeout." },
-        { title: "Lire localement", description: "Cet onglet ouvre le fichier et valide les entrées de visionnage prises en charge." },
-        { title: "Explorer", description: "Un tableau de bord regroupe dates, vidéos, chaînes et habitudes de visionnage." },
+      eyebrow: "Fonctionnement de l’analyse",
+      title: "Ce que mesure cet analyseur d’historique YouTube",
+      description: "Le fichier watch-history.json de Google Takeout est une liste chronologique des visionnages. Playback Stats lit chaque titre, chaîne et horodatage valides, puis regroupe ces entrées en comparaisons utiles sans contacter YouTube ni Google.",
+      details: [
+        { title: "Activité de visionnage", description: "Comptez les visionnages par jour, mois, jour de la semaine et heure pour suivre l’évolution de votre activité YouTube." },
+        { title: "Vidéos et chaînes", description: "Classez les vidéos revues, comparez les chaînes et mesurez la diversité de votre historique." },
+        { title: "Habitudes dans le temps", description: "Retrouvez votre première vidéo, votre journée la plus active, votre heure de pointe, votre jour favori et votre plus longue série." },
       ],
-      limitationLabel: "Limite importante",
-      limitationTitle: "Les vues ne sont pas du temps de visionnage.",
-      limitationDescription:
-        "L’export de l’historique YouTube n’indique pas de durée fiable pour chaque événement. Playback Stats présente les vues enregistrées et les tendances d’activité sans inventer une durée totale.",
       jsonGuide: "Lire le guide des champs de watch-history.json",
       channelGuide: "Comprendre le classement des chaînes",
+      limitationTitle: "Une limite volontaire",
+      limitationDescription: "L’export YouTube ne fournit pas de durée de visionnage fiable pour chaque événement. Le tableau de bord présente donc les vues et habitudes plutôt qu’une durée totale inventée.",
     },
     export: {
-      eyebrow: "Quatre étapes simples",
-      title: "Comment exporter votre historique de visionnage YouTube",
-      description:
-        "Utilisez Google Takeout pour créer une copie de votre historique sans donner à Playback Stats l’accès à votre compte Google.",
+      eyebrow: "Vos propres données",
+      title: "Comment exporter votre historique YouTube",
+      description: "Google Takeout vous permet de télécharger votre historique sans donner à ce site l’accès à votre compte.",
       action: "Ouvrir Google Takeout",
-      guideAction: "Consulter le guide JSON détaillé",
+      guideAction: "Voir le contenu de watch-history.json",
       steps: [
         { title: "Ouvrir Google Takeout", description: "Connectez-vous, désélectionnez tout, puis choisissez YouTube et YouTube Music." },
-        { title: "Garder uniquement l’historique", description: "Ouvrez les options de données et ne conservez que l’historique." },
-        { title: "Télécharger l’export", description: "Gardez l’archive intacte ou trouvez history/watch-history.json à l’intérieur." },
-        { title: "L’analyser ici", description: "Choisissez l’archive ou le JSON ci-dessus. Tout se passe dans cet onglet." },
+        { title: "Conserver uniquement l’historique", description: "Ouvrez les options des données incluses et ne gardez que l’historique avant de créer l’export." },
+        { title: "Télécharger l’export", description: "Gardez l’archive ZIP intacte, ou décompressez-la et trouvez history/watch-history.json dans le dossier YouTube." },
+        { title: "Explorer localement", description: "Choisissez ici l’archive Takeout ou watch-history.json. L’import et l’analyse se font dans cet onglet." },
       ],
     },
     privacy: {
-      eyebrow: "La confidentialité est le produit",
-      title: "Votre historique personnel doit rester personnel.",
-      description:
-        "Le fichier Takeout original n’atteint jamais Playback Stats. Seuls les résumés compacts restent dans la session actuelle et disparaissent lorsque vous la fermez.",
+      title: "Vos données personnelles doivent rester personnelles",
+      description: "Le fichier Takeout original est lu localement et n’est jamais envoyé à Playback Stats. Seuls des résumés compacts restent dans la session actuelle du navigateur.",
       facts: [
-        { title: "Navigateur uniquement", description: "Aucun point d’envoi n’existe pour les fichiers d’historique." },
-        { title: "Session uniquement", description: "Fermez l’onglet pour effacer le tableau de bord compact." },
-        { title: "Open source", description: "Vérifiez vous-même les règles d’import et d’analyse." },
+        { title: "Navigateur uniquement", detail: "Aucun point d’envoi" },
+        { title: "Session uniquement", detail: "Fermez pour effacer" },
+        { title: "Open source", detail: "Chaque règle est consultable" },
       ],
     },
     faq: {
       eyebrow: "Bon à savoir",
       title: "FAQ de l’analyseur d’historique YouTube",
       items: [
-        {
-          question: "Comment voir mes statistiques YouTube en tant que spectateur ?",
-          answer:
-            "Exportez l’historique YouTube et YouTube Music avec Google Takeout, puis choisissez ici l’archive ou watch-history.json. Playback Stats transforme les entrées valides en classements de chaînes, tendances, séries et habitudes sans connecter votre compte YouTube.",
-        },
-        {
-          question: "Comment voir mes chaînes YouTube les plus regardées ?",
-          answer:
-            "Importez votre historique Takeout. Playback Stats regroupe les événements valides par chaîne et crée un classement de fréquence fondé sur les vues enregistrées, sans inventer de temps de visionnage.",
-        },
-        { question: "Mon historique YouTube est-il téléversé ?", answer: "Non. Le fichier est lu et résumé localement dans votre navigateur. Playback Stats ne possède aucun point d’envoi pour les historiques." },
-        {
-          question: "Jusqu’où remonte le tableau de bord ?",
-          answer:
-            "Jusqu’à la plus ancienne entrée valide de l’export. Il ne peut pas récupérer les périodes où l’historique était suspendu, les éléments supprimés manuellement ou automatiquement, ni ceux exclus par vos paramètres d’activité.",
-        },
-        {
-          question: "Peut-il calculer mon temps de visionnage YouTube total ?",
-          answer:
-            "Non. Takeout enregistre le moment d’une vue, mais pas une durée fiable pour chaque événement. Playback Stats présente l’activité sans fabriquer d’estimation du temps de visionnage.",
-        },
-        {
-          question: "Pourquoi les totaux peuvent-ils différer de YouTube ?",
-          answer:
-            "Seules les entrées valides du JSON exporté sont comptées. L’historique supprimé ou suspendu, les vidéos privées ou indisponibles, la suppression automatique et les paramètres d’activité influencent l’export.",
-        },
+        { question: "Comment voir mes statistiques YouTube en tant que spectateur ?", answer: "Exportez vos historiques YouTube et YouTube Music avec Google Takeout, puis choisissez ici l’archive Takeout ou watch-history.json. Playback Stats transforme ces entrées en classements de chaînes, tendances, séries et statistiques personnelles sans connecter votre compte YouTube." },
+        { question: "Mon historique YouTube est-il envoyé ?", answer: "Non. Le fichier est lu et résumé localement dans votre navigateur. Playback Stats ne possède aucun point d’envoi pour les fichiers d’historique." },
+        { question: "Ai-je besoin d’un compte Google ou Playback Stats ?", answer: "Non. Exportez le fichier depuis Google Takeout, puis analysez-le sans connecter de compte ni de clé API." },
+        { question: "Jusqu’où remonte le tableau de bord ?", answer: "Jusqu’à la première entrée valide de l’export. Il ne peut pas récupérer les périodes où l’historique YouTube était suspendu, les éléments supprimés ou effacés automatiquement, ni les données exclues par vos paramètres d’activité." },
+        { question: "Que se passe-t-il lorsque j’actualise la page ?", answer: "Le fichier original n’est jamais conservé. Les données compactes du tableau de bord restent uniquement dans cette session et peuvent être effacées en la fermant." },
+        { question: "L’outil peut-il calculer mon temps total passé sur YouTube ?", answer: "Non. L’historique Google Takeout indique quand une vidéo a été regardée, mais pas une durée fiable pour chaque événement. Playback Stats présente l’activité sans inventer une durée." },
+        { question: "Pourquoi les totaux peuvent-ils différer de ceux de YouTube ?", answer: "L’analyseur ne compte que les entrées valides du JSON exporté. Un historique supprimé ou suspendu, des vidéos privées ou indisponibles et les paramètres d’activité peuvent modifier le contenu de l’export." },
       ],
-    },
-    finalCta: {
-      eyebrow: "Quand vous voulez",
-      title: "Votre histoire de visionnage est déjà dans le fichier.",
-      description: "Ouvrez-la en privé et transformez des années d’historique en informations réellement compréhensibles.",
-      action: "Choisir mon fichier d’historique",
-      localPrivate: "Local / privé",
     },
     footer: {
       privacyStatement: "Votre historique reste sur votre appareil",
@@ -661,7 +478,7 @@ export const landingContent: Record<Locale, LandingContent> = {
       terms: "Conditions",
     },
     upload: {
-      chooseAriaLabel: "Choisir un historique YouTube au format JSON ou une archive Google Takeout",
+      chooseAriaLabel: "Choisir un historique YouTube JSON ou une archive Google Takeout ZIP",
       dropTitle: "Déposez-le ici",
       idleTitle: "Ajoutez votre historique YouTube",
       descriptionStart: "Déposez l’archive Takeout ou le JSON ici, ou",

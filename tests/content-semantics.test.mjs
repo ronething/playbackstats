@@ -24,8 +24,8 @@ const sitemap = readFileSync(new URL("../app/sitemap.ts", import.meta.url), "utf
 test("YouTube homepage does not present fabricated history as user data", () => {
   assert.doesNotMatch(youtubeSource, /Your viewing history/)
   assert.doesNotMatch(youtubeSource, /12,842|1,318|47 days/)
-  assert.match(youtubeSource, /From export to insight/)
-  assert.match(youtubeSource, /do not include dependable minutes watched/)
+  assert.match(youtubeSource, /What this YouTube history analyzer measures/)
+  assert.match(youtubeSource, /does not include dependable watch duration/)
   assert.match(youtubeSource, /Google Takeout ZIP or watch-history\.json/)
   assert.match(youtubeSource, /How do I see my YouTube stats as a viewer\?/)
   assert.match(youtubeSource, /YouTube History was paused/)

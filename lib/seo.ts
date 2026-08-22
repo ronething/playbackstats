@@ -25,7 +25,7 @@ export function buildLandingMetadata(locale: Locale): Metadata {
       type: "website",
       url: canonical,
       title: content.meta.title,
-      description: content.meta.description,
+      description: content.meta.socialDescription,
       siteName: "Playback Stats",
       locale: content.meta.ogLocale,
       alternateLocale: locales
@@ -35,7 +35,7 @@ export function buildLandingMetadata(locale: Locale): Metadata {
     twitter: {
       card: "summary_large_image",
       title: content.meta.title,
-      description: content.meta.description,
+      description: content.meta.socialDescription,
     },
     robots: {
       index: true,

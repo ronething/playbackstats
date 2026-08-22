@@ -145,7 +145,7 @@ export default function FileUploadForm({ locale = "en" }: FileUploadFormProps) {
   return (
     <div className="w-full">
       {error && (
-        <div role="alert" className="mb-4 border border-[#ff7770]/35 bg-[#d52b22]/15 p-4 text-sm text-red-100 animate-scale-in">
+        <div role="alert" className="mb-4 rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-100 animate-scale-in">
           <p className="font-semibold">{error.title}</p>
           <p className="mt-1 leading-6 text-red-100/80">{error.message}</p>
           <p className="mt-2 text-xs leading-5 text-zinc-400">{error.action}</p>
@@ -158,10 +158,10 @@ export default function FileUploadForm({ locale = "en" }: FileUploadFormProps) {
             role="button"
             tabIndex={0}
             aria-label={content.chooseAriaLabel}
-            className={`group relative cursor-pointer border border-dashed p-6 text-center transition-all duration-300 sm:p-8 ${
+            className={`group relative cursor-pointer rounded-3xl border border-dashed p-7 text-center transition-all duration-300 sm:p-8 ${
               isDragging
-                ? "scale-[1.01] border-[#ff7770] bg-[#d52b22]/15"
-                : "border-white/20 bg-white/[0.035] hover:border-white/40 hover:bg-white/[0.055]"
+                ? "scale-[1.01] border-red-400 bg-red-500/10"
+                : "border-white/15 bg-white/[0.04] hover:border-white/25 hover:bg-white/[0.06]"
             }`}
             onDragOver={(event) => {
               event.preventDefault()
@@ -181,27 +181,27 @@ export default function FileUploadForm({ locale = "en" }: FileUploadFormProps) {
             }}
           >
             <div className="flex flex-col items-center justify-center space-y-4">
-              <div className={`flex h-14 w-14 items-center justify-center ring-1 ring-inset transition-all ${
+              <div className={`flex h-16 w-16 items-center justify-center rounded-2xl ring-1 ring-inset transition-all ${
                 isDragging
-                  ? "scale-105 bg-[#d52b22]/25 text-[#ffb0ab] ring-[#ff7770]/40"
-                  : "bg-[#d52b22]/20 text-[#ff938d] ring-[#ff7770]/25"
+                  ? "scale-105 bg-red-500/20 text-red-200 ring-red-400/35"
+                  : "bg-red-500/15 text-red-300 ring-red-500/25"
               }`}>
-                <Upload className="h-7 w-7 transition-transform group-hover:-translate-y-0.5" aria-hidden="true" />
+                <Upload className="h-8 w-8 transition-transform group-hover:-translate-y-0.5" aria-hidden="true" />
               </div>
               <div className="space-y-2">
                 <h2 className="text-xl font-semibold text-white">
                   {isDragging ? content.dropTitle : content.idleTitle}
                 </h2>
                 <p className="text-sm leading-6 text-zinc-400">
-                  {content.descriptionStart} <span className="font-medium text-[#ff938d]">{content.chooseFile}</span>
+                  {content.descriptionStart} <span className="font-medium text-red-300">{content.chooseFile}</span>
                 </p>
               </div>
-              <div className="flex items-center gap-2 border border-white/10 bg-black/20 px-3 py-2 text-xs text-zinc-500">
-                <FileArchive className="h-3.5 w-3.5 text-[#ff938d]" aria-hidden="true" />
+              <div className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-black/20 px-3 py-2 text-xs text-zinc-500">
+                <FileArchive className="h-3.5 w-3.5 text-red-300" aria-hidden="true" />
                 {content.formats}
               </div>
               <div className="flex items-center gap-2 text-xs text-zinc-500">
-                <ShieldCheck className="h-3.5 w-3.5 text-[#ff938d]" aria-hidden="true" />
+                <ShieldCheck className="h-3.5 w-3.5 text-red-300" aria-hidden="true" />
                 {content.localNote}
               </div>
             </div>
@@ -220,11 +220,11 @@ export default function FileUploadForm({ locale = "en" }: FileUploadFormProps) {
 
         </>
       ) : (
-        <Card className="animate-scale-in rounded-none border-white/15 bg-white/[0.04] p-5 text-white shadow-none">
+        <Card className="animate-scale-in border-white/10 bg-zinc-900/80 p-5 text-white shadow-2xl shadow-black/20">
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-4">
-              <div className="relative shrink-0 bg-[#d52b22]/20 p-3">
-                {isZip ? <FileArchive className="h-6 w-6 text-[#ff938d]" /> : <FileJson className="h-6 w-6 text-[#ff938d]" />}
+              <div className="relative shrink-0 rounded-xl bg-red-500/15 p-3">
+                {isZip ? <FileArchive className="h-6 w-6 text-red-300" /> : <FileJson className="h-6 w-6 text-red-300" />}
                 {!isProcessing && <div className="absolute -right-1 -top-1 h-3 w-3 rounded-full border-2 border-zinc-900 bg-emerald-400" />}
               </div>
               <div className="min-w-0">
@@ -241,18 +241,18 @@ export default function FileUploadForm({ locale = "en" }: FileUploadFormProps) {
           {isProcessing ? (
             <div className="mt-5 space-y-3" aria-live="polite">
               <div className="relative h-2 overflow-hidden rounded-full bg-white/10">
-                <div className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[#d52b22] to-[#ff938d] transition-[width] duration-300" style={{ width: `${progress}%` }} />
+                <div className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-red-600 to-red-300 transition-[width] duration-300" style={{ width: `${progress}%` }} />
               </div>
               <div className="flex items-center justify-between gap-4 text-sm">
                 <div className="flex min-w-0 items-center gap-2 text-zinc-400">
-                  {progress < 100 ? <Loader2 className="h-4 w-4 shrink-0 animate-spin text-[#ff938d]" /> : <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />}
+                  {progress < 100 ? <Loader2 className="h-4 w-4 shrink-0 animate-spin text-red-300" /> : <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />}
                   <span className="truncate">{progressStage}</span>
                 </div>
-                <span className="shrink-0 font-mono font-semibold text-[#ff938d]">{progress}%</span>
+                <span className="shrink-0 font-mono font-semibold text-red-300">{progress}%</span>
               </div>
             </div>
           ) : (
-            <Button type="button" className="mt-5 h-12 w-full rounded-none bg-[#d52b22] text-base font-semibold text-white hover:bg-[#ed4238]" onClick={processFile}>
+            <Button type="button" className="mt-5 h-12 w-full bg-red-500 text-base font-semibold text-white hover:bg-red-400" onClick={processFile}>
               {content.analyze}
               <span className="ml-2 text-lg" aria-hidden="true">→</span>
             </Button>
