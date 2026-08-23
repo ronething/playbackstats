@@ -11,6 +11,15 @@ const spotifyAnalyzer = readFileSync(
   new URL("../components/spotify/spotify-analyzer.tsx", import.meta.url),
   "utf8",
 )
+const spotifyTrackRanking = readFileSync(
+  new URL("../components/spotify/spotify-track-ranking-row.tsx", import.meta.url),
+  "utf8",
+)
+const spotifyInsightsExplorer = readFileSync(
+  new URL("../components/spotify/spotify-insights-explorer.tsx", import.meta.url),
+  "utf8",
+)
+const privacyPage = readFileSync(new URL("../app/privacy/page.tsx", import.meta.url), "utf8")
 const youtubeJsonGuide = readFileSync(
   new URL("../app/guides/youtube-watch-history-json/page.tsx", import.meta.url),
   "utf8",
@@ -42,6 +51,24 @@ test("Spotify page describes the input and calculations in visible content", () 
   assert.match(spotifyPage, /Can I see Spotify stats without logging in\?/)
   assert.match(spotifyPage, /How far back will my Spotify stats go\?/)
   assert.match(spotifyPage, /What happens to my Spotify stats when I refresh\?/)
+  assert.match(spotifyPage, /Can I preview tracks from my history\?/)
+})
+
+test("Spotify playback stays user-initiated and discloses the third-party boundary", () => {
+  assert.match(spotifyTrackRanking, /isActive && links/)
+  assert.match(spotifyTrackRanking, /encrypted-media/)
+  assert.match(spotifyTrackRanking, /Open in Spotify/)
+  assert.doesNotMatch(spotifyTrackRanking, /preview_url/)
+  assert.match(privacyPage, /not loaded until you click Play/)
+  assert.match(privacyPage, /does not proxy, cache, download, or receive the/)
+})
+
+test("Spotify weekday heatmap exposes exact values on hover and keyboard focus", () => {
+  assert.match(spotifyInsightsExplorer, /TooltipProvider/)
+  assert.match(spotifyInsightsExplorer, /TooltipTrigger asChild/)
+  assert.match(spotifyInsightsExplorer, /listening minutes/)
+  assert.match(spotifyInsightsExplorer, /qualified.*play/)
+  assert.match(spotifyInsightsExplorer, /aria-label=/)
 })
 
 test("Sitemap uses stable page-specific modification dates", () => {

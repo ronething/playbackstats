@@ -8,6 +8,7 @@ export interface SpotifyStream {
   album?: string
   trackUri?: string
   platform?: string
+  reasonStart?: string
   reasonEnd?: string
   shuffle?: boolean
   skipped?: boolean
@@ -44,8 +45,40 @@ export interface SpotifyRankedTrack {
   name: string
   artist: string
   album?: string
+  trackUri?: string
   hours: number
   plays: number
+}
+
+export interface SpotifyRankedAlbum {
+  name: string
+  artist: string
+  hours: number
+  plays: number
+  uniqueTracks: number
+}
+
+export type SpotifyAnalysisRange = "all" | "last12Months" | `year:${number}`
+
+export interface SpotifyDataset {
+  streams: SpotifyStream[]
+  source: SpotifySourceSummary
+}
+
+export interface SpotifyComparison {
+  label: string
+  totalHoursChange?: number
+  activeDaysChange?: number
+  uniqueArtistsChange?: number
+  uniqueTracksChange?: number
+  skipRatePointChange?: number
+}
+
+export interface SpotifyArtistMovement {
+  name: string
+  currentHours: number
+  previousHours: number
+  changeHours: number
 }
 
 export interface SpotifyInsight {
@@ -57,12 +90,21 @@ export interface SpotifyInsight {
 
 export interface SpotifyAnalysis {
   source: SpotifySourceSummary
+  range: {
+    selection: SpotifyAnalysisRange
+    label: string
+    startAt: number
+    endAt: number
+  }
+  comparison?: SpotifyComparison
   summary: {
     totalHours: number
     totalPlays: number
     totalEvents: number
     uniqueTracks: number
     uniqueArtists: number
+    qualifiedUniqueTracks: number
+    qualifiedUniqueArtists: number
     activeDays: number
     spanDays: number
     averageMinutesPerActiveDay: number
@@ -73,10 +115,23 @@ export interface SpotifyAnalysis {
   monthly: { month: string; hours: number; plays: number }[]
   hourly: { hour: number; minutes: number; plays: number }[]
   weekdays: { day: string; shortDay: string; minutes: number; plays: number }[]
+  weekdayHours: { day: string; shortDay: string; hour: number; minutes: number; plays: number }[]
   yearly: { year: string; hours: number; plays: number; uniqueArtists: number }[]
   topArtists: SpotifyRankedArtist[]
   topTracks: SpotifyRankedTrack[]
+  topAlbums: SpotifyRankedAlbum[]
+  artistMovements: {
+    rising: SpotifyArtistMovement[]
+    cooling: SpotifyArtistMovement[]
+  }
   platforms: { name: string; hours: number; share: number }[]
+  platformBehavior: {
+    name: string
+    hours: number
+    events: number
+    skipRate?: number
+    trackDoneRate?: number
+  }[]
   behavior: {
     hasExtendedData: boolean
     skipRate?: number
@@ -84,176 +139,26 @@ export interface SpotifyAnalysis {
     offlineRate?: number
     trackDoneRate?: number
   }
+  listeningPattern: {
+    weekendShare: number
+    weekdayShare: number
+    sessionCount: number
+    averageSessionMinutes: number
+    longestSessionMinutes: number
+    averageQualifiedTracksPerSession: number
+    varietyRate: number
+    repeatRate: number
+  }
   peakDay: { date: string; hours: number; plays: number }
   insights: SpotifyInsight[]
-}
-
-interface MergeSpotifyOptions {
-  recognizedFiles: number
-  ignoredFiles: number
-}
-
-interface MergedSpotifyStreams {
-  streams: SpotifyStream[]
-  source: SpotifySourceSummary
 }
 
 const MIN_PLAY_MS = 30_000
 const HOUR_MS = 60 * 60 * 1000
 const DAY_MS = 24 * HOUR_MS
+const SESSION_GAP_MS = 30 * 60 * 1000
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value)
-}
-
-function stringValue(value: unknown): string | undefined {
-  if (typeof value !== "string") return undefined
-  const normalized = value.trim()
-  return normalized || undefined
-}
-
-function booleanValue(value: unknown): boolean | undefined {
-  return typeof value === "boolean" ? value : undefined
-}
-
-function numberValue(value: unknown): number | undefined {
-  if (typeof value !== "number" && typeof value !== "string") return undefined
-  const parsed = Number(value)
-  return Number.isFinite(parsed) ? parsed : undefined
-}
-
-function parseTimestamp(value: unknown): number | undefined {
-  if (typeof value !== "string") return undefined
-
-  // Spotify's standard export omits a timezone and uses a space separator.
-  const normalized = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(value)
-    ? `${value.replace(" ", "T")}:00Z`
-    : value
-  const timestamp = new Date(normalized).getTime()
-  return Number.isFinite(timestamp) ? timestamp : undefined
-}
-
-function normalizeExtendedRecord(record: Record<string, unknown>): SpotifyStream | null {
-  if (!("ts" in record) || !("ms_played" in record)) return null
-
-  const timestamp = parseTimestamp(record.ts)
-  const msPlayed = numberValue(record.ms_played)
-  const artist = stringValue(record.master_metadata_album_artist_name)
-  const track = stringValue(record.master_metadata_track_name)
-
-  // Podcast episodes and audiobook chapters share the extended export schema.
-  // The music analyzer intentionally keeps only records with track metadata.
-  if (timestamp === undefined || msPlayed === undefined || !artist || !track) return null
-
-  return {
-    timestamp,
-    msPlayed: Math.max(0, msPlayed),
-    artist,
-    track,
-    album: stringValue(record.master_metadata_album_album_name),
-    trackUri: stringValue(record.spotify_track_uri),
-    platform: stringValue(record.platform),
-    reasonEnd: stringValue(record.reason_end),
-    shuffle: booleanValue(record.shuffle),
-    skipped: booleanValue(record.skipped),
-    offline: booleanValue(record.offline),
-    source: "extended",
-  }
-}
-
-function normalizeStandardRecord(record: Record<string, unknown>): SpotifyStream | null {
-  if (!("endTime" in record) || !("msPlayed" in record)) return null
-
-  const timestamp = parseTimestamp(record.endTime)
-  const msPlayed = numberValue(record.msPlayed)
-  const artist = stringValue(record.artistName)
-  const track = stringValue(record.trackName)
-  if (timestamp === undefined || msPlayed === undefined || !artist || !track) return null
-
-  return {
-    timestamp,
-    msPlayed: Math.max(0, msPlayed),
-    artist,
-    track,
-    source: "standard",
-  }
-}
-
-export function parseSpotifyExport(data: unknown): ParsedSpotifyExport {
-  const records = Array.isArray(data)
-    ? data
-    : isRecord(data) && Array.isArray(data.items)
-      ? data.items
-      : []
-
-  const extended: SpotifyStream[] = []
-  const standard: SpotifyStream[] = []
-
-  records.forEach((value) => {
-    if (!isRecord(value)) return
-
-    const extendedStream = normalizeExtendedRecord(value)
-    if (extendedStream) {
-      extended.push(extendedStream)
-      return
-    }
-
-    const standardStream = normalizeStandardRecord(value)
-    if (standardStream) standard.push(standardStream)
-  })
-
-  return { extended, standard }
-}
-
-export function mergeSpotifyStreams(
-  extendedInput: SpotifyStream[],
-  standardInput: SpotifyStream[],
-  options: MergeSpotifyOptions,
-): MergedSpotifyStreams {
-  let retainedStandard = standardInput
-  let overlapRecordsOmitted = 0
-
-  // The standard export normally overlaps the complete extended export. Keep
-  // standard records only when they extend beyond the imported extended range.
-  if (extendedInput.length > 0 && retainedStandard.length > 0) {
-    const { firstExtended, lastExtended } = extendedInput.reduce(
-      (range, stream) => ({
-        firstExtended: Math.min(range.firstExtended, stream.timestamp),
-        lastExtended: Math.max(range.lastExtended, stream.timestamp),
-      }),
-      { firstExtended: Number.POSITIVE_INFINITY, lastExtended: Number.NEGATIVE_INFINITY },
-    )
-    retainedStandard = standardInput.filter(
-      (stream) => stream.timestamp < firstExtended || stream.timestamp > lastExtended,
-    )
-    overlapRecordsOmitted = standardInput.length - retainedStandard.length
-  }
-
-  const streams = [...extendedInput, ...retainedStandard].sort(
-    (left, right) => left.timestamp - right.timestamp,
-  )
-  const format: SpotifySourceFormat =
-    extendedInput.length > 0 && retainedStandard.length > 0
-      ? "mixed"
-      : extendedInput.length > 0
-        ? "extended"
-        : "standard"
-
-  return {
-    streams,
-    source: {
-      format,
-      recognizedFiles: options.recognizedFiles,
-      ignoredFiles: options.ignoredFiles,
-      inputRecords: extendedInput.length + standardInput.length,
-      retainedRecords: streams.length,
-      extendedRecords: extendedInput.length,
-      standardRecords: retainedStandard.length,
-      duplicateRecordsOmitted: 0,
-      overlapRecordsOmitted,
-    },
-  }
-}
+export { mergeSpotifyStreams, parseSpotifyExport } from "./spotify-import.ts"
 
 function pad(value: number): string {
   return String(value).padStart(2, "0")
@@ -321,8 +226,85 @@ function fillMonthlySeries(
   return result
 }
 
-export function analyzeSpotifyStreams(merged: MergedSpotifyStreams): SpotifyAnalysis {
-  const { streams, source } = merged
+interface ResolvedSpotifyRange {
+  selection: SpotifyAnalysisRange
+  label: string
+  startAt: number
+  endAt: number
+  previous?: {
+    label: string
+    startAt: number
+    endAt: number
+  }
+}
+
+function resolveSpotifyRange(dataset: SpotifyDataset, selection: SpotifyAnalysisRange): ResolvedSpotifyRange {
+  const firstTimestamp = dataset.streams[0]?.timestamp
+  const lastTimestamp = dataset.streams[dataset.streams.length - 1]?.timestamp
+  if (firstTimestamp === undefined || lastTimestamp === undefined) {
+    throw new Error("No Spotify music streaming records were found.")
+  }
+
+  if (selection === "all") {
+    return {
+      selection,
+      label: "All time",
+      startAt: firstTimestamp,
+      endAt: lastTimestamp,
+    }
+  }
+
+  if (selection === "last12Months") {
+    const start = new Date(lastTimestamp)
+    start.setFullYear(start.getFullYear() - 1)
+    const previousStart = new Date(start)
+    previousStart.setFullYear(previousStart.getFullYear() - 1)
+    return {
+      selection,
+      label: "Latest 12 months",
+      startAt: start.getTime(),
+      endAt: lastTimestamp,
+      previous: {
+        label: "previous 12 months",
+        startAt: previousStart.getTime(),
+        endAt: start.getTime() - 1,
+      },
+    }
+  }
+
+  const year = Number(selection.slice("year:".length))
+  if (!Number.isInteger(year) || year < 1970 || year > 9999) {
+    throw new Error("The selected Spotify analysis year is invalid.")
+  }
+  const startAt = new Date(year, 0, 1).getTime()
+  const nextYearAt = new Date(year + 1, 0, 1).getTime()
+  const lastDataYear = new Date(lastTimestamp).getFullYear()
+  const endAt = year === lastDataYear ? Math.min(lastTimestamp, nextYearAt - 1) : nextYearAt - 1
+  const previousStartAt = new Date(year - 1, 0, 1).getTime()
+
+  return {
+    selection,
+    label: String(year),
+    startAt,
+    endAt,
+    previous: {
+      label: String(year - 1),
+      startAt: previousStartAt,
+      endAt: Math.min(new Date(year, 0, 1).getTime() - 1, previousStartAt + (endAt - startAt)),
+    },
+  }
+}
+
+export function getSpotifyAvailableYears(dataset: SpotifyDataset): number[] {
+  return [...new Set(dataset.streams.map((stream) => new Date(stream.timestamp).getFullYear()))]
+    .sort((left, right) => right - left)
+}
+
+function analyzeSpotifyStreamList(
+  streams: SpotifyStream[],
+  source: SpotifySourceSummary,
+  range: ResolvedSpotifyRange,
+): SpotifyAnalysis {
   if (streams.length === 0) {
     throw new Error("No Spotify music streaming records were found.")
   }
@@ -336,13 +318,24 @@ export function analyzeSpotifyStreams(merged: MergedSpotifyStreams): SpotifyAnal
   const dailyMap = new Map<string, { ms: number; plays: number }>()
   const hourlyMap = Array.from({ length: 24 }, (_, hour) => ({ hour, ms: 0, plays: 0 }))
   const weekdayMap = Array.from({ length: 7 }, () => ({ ms: 0, plays: 0 }))
+  const weekdayHourMap = Array.from({ length: 7 }, () =>
+    Array.from({ length: 24 }, () => ({ ms: 0, plays: 0 })),
+  )
   const yearlyMap = new Map<string, { ms: number; plays: number; artists: Set<string> }>()
   const artistMap = new Map<string, { displayName: string; ms: number; plays: number; tracks: Set<string> }>()
   const trackMap = new Map<
     string,
-    { name: string; artist: string; album?: string; ms: number; plays: number }
+    { name: string; artist: string; album?: string; trackUri?: string; ms: number; plays: number }
+  >()
+  const albumMap = new Map<
+    string,
+    { name: string; artist: string; ms: number; plays: number; tracks: Set<string> }
   >()
   const platformMap = new Map<string, number>()
+  const platformBehaviorMap = new Map<
+    string,
+    { ms: number; events: number; skipped: number; skippedKnown: number; trackDone: number; reasonEndKnown: number }
+  >()
 
   streams.forEach((stream) => {
     const isPlay = stream.msPlayed >= MIN_PLAY_MS
@@ -369,6 +362,8 @@ export function analyzeSpotifyStreams(merged: MergedSpotifyStreams): SpotifyAnal
     const weekdayIndex = (date.getDay() + 6) % 7
     weekdayMap[weekdayIndex].ms += stream.msPlayed
     weekdayMap[weekdayIndex].plays += Number(isPlay)
+    weekdayHourMap[weekdayIndex][date.getHours()].ms += stream.msPlayed
+    weekdayHourMap[weekdayIndex][date.getHours()].plays += Number(isPlay)
 
     const yearEntry = yearlyMap.get(year) || { ms: 0, plays: 0, artists: new Set<string>() }
     yearEntry.ms += stream.msPlayed
@@ -393,15 +388,51 @@ export function analyzeSpotifyStreams(merged: MergedSpotifyStreams): SpotifyAnal
       name: stream.track,
       artist: stream.artist,
       album: stream.album,
+      trackUri: stream.trackUri,
       ms: 0,
       plays: 0,
     }
     trackEntry.ms += stream.msPlayed
     trackEntry.plays += Number(isPlay)
+    if (!trackEntry.trackUri && stream.trackUri) trackEntry.trackUri = stream.trackUri
     trackMap.set(trackKey, trackEntry)
+
+    if (stream.album) {
+      const albumKey = `${artistKey}::${stream.album.toLocaleLowerCase()}`
+      const albumEntry = albumMap.get(albumKey) || {
+        name: stream.album,
+        artist: stream.artist,
+        ms: 0,
+        plays: 0,
+        tracks: new Set<string>(),
+      }
+      albumEntry.ms += stream.msPlayed
+      albumEntry.plays += Number(isPlay)
+      if (isPlay) albumEntry.tracks.add(trackKey)
+      albumMap.set(albumKey, albumEntry)
+    }
 
     if (stream.platform) {
       platformMap.set(stream.platform, (platformMap.get(stream.platform) || 0) + stream.msPlayed)
+      const platformBehaviorEntry = platformBehaviorMap.get(stream.platform) || {
+        ms: 0,
+        events: 0,
+        skipped: 0,
+        skippedKnown: 0,
+        trackDone: 0,
+        reasonEndKnown: 0,
+      }
+      platformBehaviorEntry.ms += stream.msPlayed
+      platformBehaviorEntry.events += 1
+      if (stream.skipped !== undefined) {
+        platformBehaviorEntry.skippedKnown += 1
+        platformBehaviorEntry.skipped += Number(stream.skipped)
+      }
+      if (stream.reasonEnd) {
+        platformBehaviorEntry.reasonEndKnown += 1
+        platformBehaviorEntry.trackDone += Number(stream.reasonEnd.toLocaleLowerCase() === "trackdone")
+      }
+      platformBehaviorMap.set(stream.platform, platformBehaviorEntry)
     }
   })
 
@@ -412,6 +443,14 @@ export function analyzeSpotifyStreams(merged: MergedSpotifyStreams): SpotifyAnal
     ),
   ).size
   const uniqueArtists = new Set(streams.map((stream) => stream.artist.toLocaleLowerCase())).size
+  const qualifiedUniqueTracks = new Set(
+    meaningfulStreams.map(
+      (stream) => stream.trackUri || `${stream.artist.toLocaleLowerCase()}::${stream.track.toLocaleLowerCase()}`,
+    ),
+  ).size
+  const qualifiedUniqueArtists = new Set(
+    meaningfulStreams.map((stream) => stream.artist.toLocaleLowerCase()),
+  ).size
   const activeDayKeys = [...dailyMap.entries()]
     .filter(([, value]) => value.ms > 0)
     .map(([key]) => key)
@@ -436,8 +475,20 @@ export function analyzeSpotifyStreams(merged: MergedSpotifyStreams): SpotifyAnal
       name: entry.name,
       artist: entry.artist,
       album: entry.album,
+      trackUri: entry.trackUri,
       hours: round(entry.ms / HOUR_MS, 1),
       plays: entry.plays,
+    }))
+
+  const topAlbums = [...albumMap.values()]
+    .sort((left, right) => right.ms - left.ms || right.plays - left.plays)
+    .slice(0, 8)
+    .map((entry) => ({
+      name: entry.name,
+      artist: entry.artist,
+      hours: round(entry.ms / HOUR_MS, 1),
+      plays: entry.plays,
+      uniqueTracks: entry.tracks.size,
     }))
 
   const weekdays = [
@@ -455,6 +506,16 @@ export function analyzeSpotifyStreams(merged: MergedSpotifyStreams): SpotifyAnal
     plays: weekdayMap[index].plays,
   }))
 
+  const weekdayHours = weekdays.flatMap((weekday, weekdayIndex) =>
+    weekdayHourMap[weekdayIndex].map((value, hour) => ({
+      day: weekday.day,
+      shortDay: weekday.shortDay,
+      hour,
+      minutes: round(value.ms / 60_000, 1),
+      plays: value.plays,
+    })),
+  )
+
   const yearly = [...yearlyMap.entries()]
     .sort(([left], [right]) => left.localeCompare(right))
     .map(([year, value]) => ({
@@ -471,6 +532,17 @@ export function analyzeSpotifyStreams(merged: MergedSpotifyStreams): SpotifyAnal
       name,
       hours: round(ms / HOUR_MS, 1),
       share: totalMs > 0 ? round((ms / totalMs) * 100, 1) : 0,
+    }))
+
+  const platformBehavior = [...platformBehaviorMap.entries()]
+    .sort(([, left], [, right]) => right.ms - left.ms)
+    .slice(0, 5)
+    .map(([name, value]) => ({
+      name,
+      hours: round(value.ms / HOUR_MS, 1),
+      events: value.events,
+      skipRate: rate(value.skipped, value.skippedKnown),
+      trackDoneRate: rate(value.trackDone, value.reasonEndKnown),
     }))
 
   const peakDayEntry = [...dailyMap.entries()].reduce(
@@ -494,6 +566,43 @@ export function analyzeSpotifyStreams(merged: MergedSpotifyStreams): SpotifyAnal
     ),
   }
 
+  const sessions: { lastEnd: number; listenedMs: number; qualifiedTracks: number }[] = []
+  streams.forEach((stream) => {
+    const estimatedStart = Math.max(0, stream.timestamp - stream.msPlayed)
+    const currentSession = sessions[sessions.length - 1]
+    if (!currentSession || estimatedStart - currentSession.lastEnd > SESSION_GAP_MS) {
+      sessions.push({
+        lastEnd: stream.timestamp,
+        listenedMs: stream.msPlayed,
+        qualifiedTracks: Number(stream.msPlayed >= MIN_PLAY_MS),
+      })
+      return
+    }
+    currentSession.lastEnd = Math.max(currentSession.lastEnd, stream.timestamp)
+    currentSession.listenedMs += stream.msPlayed
+    currentSession.qualifiedTracks += Number(stream.msPlayed >= MIN_PLAY_MS)
+  })
+  const weekendMs = weekdayMap[5].ms + weekdayMap[6].ms
+  const weekendShare = totalMs > 0 ? round((weekendMs / totalMs) * 100, 1) : 0
+  const varietyRate = totalPlays > 0 ? round((qualifiedUniqueTracks / totalPlays) * 100, 1) : 0
+  const listeningPattern: SpotifyAnalysis["listeningPattern"] = {
+    weekendShare,
+    weekdayShare: round(Math.max(0, 100 - weekendShare), 1),
+    sessionCount: sessions.length,
+    averageSessionMinutes: sessions.length > 0
+      ? round(sessions.reduce((sum, session) => sum + session.listenedMs, 0) / 60_000 / sessions.length, 1)
+      : 0,
+    longestSessionMinutes: round(
+      sessions.reduce((longest, session) => Math.max(longest, session.listenedMs), 0) / 60_000,
+      1,
+    ),
+    averageQualifiedTracksPerSession: sessions.length > 0
+      ? round(sessions.reduce((sum, session) => sum + session.qualifiedTracks, 0) / sessions.length, 1)
+      : 0,
+    varietyRate,
+    repeatRate: round(Math.max(0, 100 - varietyRate), 1),
+  }
+
   const timePeriods = [
     { name: "late-night", label: "A late-night soundtrack", hours: [0, 1, 2, 3, 4] },
     { name: "morning", label: "A morning soundtrack", hours: [5, 6, 7, 8, 9, 10, 11] },
@@ -505,7 +614,7 @@ export function analyzeSpotifyStreams(merged: MergedSpotifyStreams): SpotifyAnal
   }))
   const dominantPeriod = timePeriods.reduce((best, current) => (current.ms > best.ms ? current : best))
   const dominantShare = totalMs > 0 ? Math.round((dominantPeriod.ms / totalMs) * 100) : 0
-  const repeatRatio = totalPlays > 0 ? uniqueTracks / totalPlays : 0
+  const repeatRatio = totalPlays > 0 ? qualifiedUniqueTracks / totalPlays : 0
   const discoveryTitle = repeatRatio >= 0.55
     ? "You keep the door open"
     : repeatRatio <= 0.25
@@ -514,8 +623,8 @@ export function analyzeSpotifyStreams(merged: MergedSpotifyStreams): SpotifyAnal
   const discoveryBody = repeatRatio >= 0.55
     ? `${Math.round(repeatRatio * 100)}% of your qualified plays map to a different track — a broad listening mix.`
     : repeatRatio <= 0.25
-      ? `Your ${totalPlays.toLocaleString()} qualified plays circle back to ${uniqueTracks.toLocaleString()} tracks.`
-      : `You balance repeat favorites with discovery across ${uniqueTracks.toLocaleString()} tracks.`
+      ? `Your ${totalPlays.toLocaleString()} qualified plays circle back to ${qualifiedUniqueTracks.toLocaleString()} tracks.`
+      : `You balance repeat favorites with discovery across ${qualifiedUniqueTracks.toLocaleString()} qualified tracks.`
 
   const insights: SpotifyInsight[] = [
     {
@@ -555,12 +664,20 @@ export function analyzeSpotifyStreams(merged: MergedSpotifyStreams): SpotifyAnal
 
   return {
     source,
+    range: {
+      selection: range.selection,
+      label: range.label,
+      startAt: range.startAt,
+      endAt: range.endAt,
+    },
     summary: {
       totalHours: round(totalMs / HOUR_MS, 1),
       totalPlays,
       totalEvents: streams.length,
       uniqueTracks,
       uniqueArtists,
+      qualifiedUniqueTracks,
+      qualifiedUniqueArtists,
       activeDays,
       spanDays,
       averageMinutesPerActiveDay: activeDays > 0 ? round(totalMs / 60_000 / activeDays, 1) : 0,
@@ -575,11 +692,16 @@ export function analyzeSpotifyStreams(merged: MergedSpotifyStreams): SpotifyAnal
       plays: entry.plays,
     })),
     weekdays,
+    weekdayHours,
     yearly,
     topArtists,
     topTracks,
+    topAlbums,
+    artistMovements: { rising: [], cooling: [] },
     platforms,
+    platformBehavior,
     behavior,
+    listeningPattern,
     peakDay: {
       date: peakDayEntry[0],
       hours: round(peakDayEntry[1].ms / HOUR_MS, 1),
@@ -587,4 +709,89 @@ export function analyzeSpotifyStreams(merged: MergedSpotifyStreams): SpotifyAnal
     },
     insights,
   }
+}
+
+function percentageChange(current: number, previous: number): number | undefined {
+  if (previous <= 0) return undefined
+  return round(((current - previous) / previous) * 100, 1)
+}
+
+function buildArtistMovements(
+  currentStreams: SpotifyStream[],
+  previousStreams: SpotifyStream[],
+): SpotifyAnalysis["artistMovements"] {
+  const aggregate = (streams: SpotifyStream[]) => {
+    const artists = new Map<string, { name: string; ms: number }>()
+    streams.forEach((stream) => {
+      const key = stream.artist.toLocaleLowerCase()
+      const entry = artists.get(key) || { name: stream.artist, ms: 0 }
+      entry.ms += stream.msPlayed
+      artists.set(key, entry)
+    })
+    return artists
+  }
+  const current = aggregate(currentStreams)
+  const previous = aggregate(previousStreams)
+  const movements = [...new Set([...current.keys(), ...previous.keys()])].map((key) => {
+    const currentEntry = current.get(key)
+    const previousEntry = previous.get(key)
+    const currentHours = (currentEntry?.ms || 0) / HOUR_MS
+    const previousHours = (previousEntry?.ms || 0) / HOUR_MS
+    return {
+      name: currentEntry?.name || previousEntry?.name || key,
+      currentHours: round(currentHours, 1),
+      previousHours: round(previousHours, 1),
+      changeHours: round(currentHours - previousHours, 1),
+    }
+  })
+
+  return {
+    rising: movements
+      .filter((movement) => movement.changeHours > 0 && movement.currentHours >= 0.1)
+      .sort((left, right) => right.changeHours - left.changeHours)
+      .slice(0, 3),
+    cooling: movements
+      .filter((movement) => movement.changeHours < 0 && movement.previousHours >= 0.1)
+      .sort((left, right) => left.changeHours - right.changeHours)
+      .slice(0, 3),
+  }
+}
+
+export function analyzeSpotifyStreams(
+  dataset: SpotifyDataset,
+  selection: SpotifyAnalysisRange = "all",
+): SpotifyAnalysis {
+  const range = resolveSpotifyRange(dataset, selection)
+  const currentStreams = dataset.streams.filter(
+    (stream) => stream.timestamp >= range.startAt && stream.timestamp <= range.endAt,
+  )
+  const analysis = analyzeSpotifyStreamList(currentStreams, dataset.source, range)
+
+  if (!range.previous) return analysis
+  const previousStreams = dataset.streams.filter(
+    (stream) => stream.timestamp >= range.previous!.startAt && stream.timestamp <= range.previous!.endAt,
+  )
+  if (previousStreams.length === 0) return analysis
+
+  const previousAnalysis = analyzeSpotifyStreamList(previousStreams, dataset.source, {
+    selection,
+    label: range.previous.label,
+    startAt: range.previous.startAt,
+    endAt: range.previous.endAt,
+  })
+  analysis.comparison = {
+    label: range.previous.label,
+    totalHoursChange: percentageChange(analysis.summary.totalHours, previousAnalysis.summary.totalHours),
+    activeDaysChange: percentageChange(analysis.summary.activeDays, previousAnalysis.summary.activeDays),
+    uniqueArtistsChange: percentageChange(
+      analysis.summary.uniqueArtists,
+      previousAnalysis.summary.uniqueArtists,
+    ),
+    uniqueTracksChange: percentageChange(analysis.summary.uniqueTracks, previousAnalysis.summary.uniqueTracks),
+    skipRatePointChange: analysis.behavior.skipRate !== undefined && previousAnalysis.behavior.skipRate !== undefined
+      ? round(analysis.behavior.skipRate - previousAnalysis.behavior.skipRate, 1)
+      : undefined,
+  }
+  analysis.artistMovements = buildArtistMovements(currentStreams, previousStreams)
+  return analysis
 }

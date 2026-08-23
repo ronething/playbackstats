@@ -117,6 +117,11 @@ export default function TermsOfService() {
                 </Link>
                 .
               </p>
+              <p>
+                Optional Spotify playback is supplied by Spotify through its official embedded player and is subject
+                to Spotify&apos;s availability, terms, privacy practices, regional restrictions, and account rules.
+                Playback Stats does not host or provide downloads of Spotify audio.
+              </p>
             </section>
 
             <section className="space-y-4">
