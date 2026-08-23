@@ -81,6 +81,13 @@ export default function PrivacyPolicy() {
                 History processing and visualization happen locally in your browser. Links to services such as
                 Spotify, Google, GitHub, or other external sites are governed by those services&apos; own privacy policies.
               </p>
+              <p>
+                Spotify track players are optional and are not loaded until you click Play. At that point, your
+                browser connects directly to Spotify and supplies the selected Spotify Track ID. Spotify may receive
+                standard request information such as your IP address, browser details, referrer, and cookies according
+                to Spotify&apos;s own privacy practices. Playback Stats does not proxy, cache, download, or receive the
+                audio.
+              </p>
             </section>
 
             <section className="space-y-4">

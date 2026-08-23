@@ -100,7 +100,7 @@ function buildTraits(analysis: SpotifyAnalysis, peakHour: number | undefined): S
   if (analysis.summary.totalPlays === 0) {
     discoveryTrait = { label: "Personal Archive", detail: "Built from local history" }
   } else {
-    const variety = Math.min(1, analysis.summary.uniqueTracks / analysis.summary.totalPlays)
+    const variety = Math.min(1, analysis.summary.qualifiedUniqueTracks / analysis.summary.totalPlays)
     const varietyDetail = `${Math.round(variety * 100)}% track-to-play variety`
     discoveryTrait = variety >= 0.55
       ? { label: "Music Explorer", detail: varietyDetail }

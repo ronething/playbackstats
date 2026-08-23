@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo, useState } from "react"
 import {
   Area,
   AreaChart,
@@ -32,12 +33,20 @@ import {
 } from "lucide-react"
 
 import SpotifyDnaCard from "@/components/spotify/spotify-dna-card"
+import SpotifyInsightsExplorer from "@/components/spotify/spotify-insights-explorer"
+import SpotifyTrackRankingRow from "@/components/spotify/spotify-track-ranking-row"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type { SpotifyAnalysis } from "@/lib/spotify-analysis"
+import {
+  analyzeSpotifyStreams,
+  getSpotifyAvailableYears,
+  type SpotifyAnalysis,
+  type SpotifyAnalysisRange,
+  type SpotifyDataset,
+} from "@/lib/spotify-analysis"
 
 interface SpotifyDashboardProps {
-  analysis: SpotifyAnalysis
+  dataset: SpotifyDataset
   onReset: () => void
 }
 
@@ -155,7 +164,11 @@ function RankingRow({
   )
 }
 
-export default function SpotifyDashboard({ analysis, onReset }: SpotifyDashboardProps) {
+export default function SpotifyDashboard({ dataset, onReset }: SpotifyDashboardProps) {
+  const [range, setRange] = useState<SpotifyAnalysisRange>("all")
+  const [activeTrackId, setActiveTrackId] = useState<string | null>(null)
+  const availableYears = useMemo(() => getSpotifyAvailableYears(dataset), [dataset])
+  const analysis = useMemo(() => analyzeSpotifyStreams(dataset, range), [dataset, range])
   const { summary, source, behavior } = analysis
   const maxArtistHours = analysis.topArtists[0]?.hours || 1
   const maxTrackPlays = Math.max(1, ...analysis.topTracks.map((track) => track.plays))
@@ -204,6 +217,11 @@ export default function SpotifyDashboard({ analysis, onReset }: SpotifyDashboard
     { label: "Ended naturally", value: behavior.trackDoneRate, icon: CheckCircle2 },
   ]
 
+  const handleRangeChange = (nextRange: SpotifyAnalysisRange) => {
+    setActiveTrackId(null)
+    setRange(nextRange)
+  }
+
   return (
     <div id="spotify-dashboard" className="scroll-mt-28 space-y-8 pb-20">
       <section className="flex flex-col justify-between gap-5 border-b border-white/10 pb-8 lg:flex-row lg:items-end">
@@ -222,15 +240,31 @@ export default function SpotifyDashboard({ analysis, onReset }: SpotifyDashboard
             {formatDate(summary.firstPlayedAt)} – {formatDate(summary.lastPlayedAt)} · Times are displayed in this browser&apos;s local timezone.
           </p>
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full border-white/15 bg-white/[0.04] text-white hover:bg-white/10 hover:text-white sm:w-auto"
-          onClick={onReset}
-        >
-          <RotateCcw className="mr-2 h-4 w-4" aria-hidden="true" />
-          Analyze different files
-        </Button>
+        <div className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto">
+          <label className="flex min-w-[190px] flex-col gap-1.5 text-xs text-zinc-500">
+            Analysis period
+            <select
+              value={range}
+              onChange={(event) => handleRangeChange(event.target.value as SpotifyAnalysisRange)}
+              className="h-10 rounded-md border border-white/15 bg-zinc-900 px-3 text-sm text-white outline-none transition-colors focus:border-[#1DB954]/60"
+            >
+              <option value="all">All time</option>
+              <option value="last12Months">Latest 12 months</option>
+              {availableYears.map((year) => (
+                <option key={year} value={`year:${year}`}>{year}</option>
+              ))}
+            </select>
+          </label>
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-auto w-full border-white/15 bg-white/[0.04] text-white hover:bg-white/10 hover:text-white sm:w-auto"
+            onClick={onReset}
+          >
+            <RotateCcw className="mr-2 h-4 w-4" aria-hidden="true" />
+            Analyze different files
+          </Button>
+        </div>
       </section>
 
       <section aria-label="Listening summary" className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
@@ -398,6 +432,8 @@ export default function SpotifyDashboard({ analysis, onReset }: SpotifyDashboard
         </ChartCard>
       </section>
 
+      <SpotifyInsightsExplorer analysis={analysis} />
+
       <section className="grid gap-4 lg:grid-cols-2">
         <ChartCard
           title="Artists that stayed"
@@ -419,17 +455,17 @@ export default function SpotifyDashboard({ analysis, onReset }: SpotifyDashboard
 
         <ChartCard
           title="Tracks on repeat"
-          description="Ranked by qualified plays of 30 seconds or longer."
+          description="Ranked by qualified plays of 30 seconds or longer. Play buttons load Spotify only after you click."
         >
           <div className="space-y-2">
             {analysis.topTracks.map((track, index) => (
-              <RankingRow
+              <SpotifyTrackRankingRow
                 key={`${track.artist}-${track.name}`}
                 rank={index + 1}
-                title={track.name}
-                subtitle={`${track.artist}${track.album ? ` · ${track.album}` : ""} · ${formatHours(track.hours)}`}
-                value={`${track.plays.toLocaleString()} plays`}
-                percentage={(track.plays / maxTrackPlays) * 100}
+                track={track}
+                maxPlays={maxTrackPlays}
+                activeTrackId={activeTrackId}
+                onActiveTrackChange={setActiveTrackId}
               />
             ))}
           </div>

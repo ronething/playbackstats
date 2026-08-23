@@ -5,7 +5,7 @@ import { BarChart3, Clock3, Music2, ShieldCheck, Sparkles } from "lucide-react"
 
 import SpotifyDashboard from "@/components/spotify/spotify-dashboard"
 import SpotifyUpload from "@/components/spotify/spotify-upload"
-import type { SpotifyAnalysis } from "@/lib/spotify-analysis"
+import type { SpotifyDataset } from "@/lib/spotify-analysis"
 
 const promises = [
   { icon: BarChart3, label: "Your timeline", detail: "Monthly and yearly listening trends" },
@@ -14,26 +14,26 @@ const promises = [
 ]
 
 export default function SpotifyAnalyzer() {
-  const [analysis, setAnalysis] = useState<SpotifyAnalysis | null>(null)
+  const [dataset, setDataset] = useState<SpotifyDataset | null>(null)
 
-  const handleComplete = (nextAnalysis: SpotifyAnalysis) => {
-    setAnalysis(nextAnalysis)
+  const handleComplete = (nextDataset: SpotifyDataset) => {
+    setDataset(nextDataset)
     window.setTimeout(() => {
       document.getElementById("spotify-dashboard")?.scrollIntoView({ behavior: "smooth", block: "start" })
     }, 50)
   }
 
   const handleReset = () => {
-    setAnalysis(null)
+    setDataset(null)
     window.setTimeout(() => {
       document.getElementById("spotify-upload")?.scrollIntoView({ behavior: "smooth", block: "start" })
     }, 50)
   }
 
-  if (analysis) {
+  if (dataset) {
     return (
       <section className="mx-auto w-full max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
-        <SpotifyDashboard analysis={analysis} onReset={handleReset} />
+        <SpotifyDashboard dataset={dataset} onReset={handleReset} />
       </section>
     )
   }
@@ -79,7 +79,7 @@ export default function SpotifyAnalyzer() {
           <div className="mt-8 flex items-start gap-3 text-sm leading-6 text-zinc-500">
             <Sparkles className="mt-1 h-4 w-4 shrink-0 text-[#4ade80]" aria-hidden="true" />
             <p>
-              No Spotify login, API key, or server upload. Insights are generated deterministically in your tab — no AI sees your track history.
+              No Spotify login, API key, or server upload. Insights are generated deterministically in your tab — no AI sees your track history. Optional track players connect to Spotify only after you click Play.
             </p>
           </div>
         </div>

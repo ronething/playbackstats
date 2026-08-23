@@ -8,7 +8,9 @@ const localImportFiles = [
   "../lib/youtube-analysis.ts",
   "../lib/youtube-share-card.ts",
   "../components/spotify/spotify-upload.tsx",
+  "../lib/spotify-import.ts",
   "../lib/spotify-analysis.ts",
+  "../lib/spotify-links.ts",
   "../lib/spotify-share-card.ts",
 ]
 

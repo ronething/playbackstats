@@ -21,12 +21,12 @@ import {
   analyzeSpotifyStreams,
   mergeSpotifyStreams,
   parseSpotifyExport,
-  type SpotifyAnalysis,
+  type SpotifyDataset,
   type SpotifyStream,
 } from "@/lib/spotify-analysis"
 
 interface SpotifyUploadProps {
-  onComplete: (analysis: SpotifyAnalysis) => void
+  onComplete: (dataset: SpotifyDataset) => void
 }
 
 interface SelectedFiles {
@@ -164,17 +164,17 @@ export default function SpotifyUpload({ onComplete }: SpotifyUploadProps) {
       setProgress(82)
       setStage("Removing overlap and duplicate records")
       await nextFrame()
-      const merged = mergeSpotifyStreams(extended, standard, { recognizedFiles, ignoredFiles })
+      const dataset = mergeSpotifyStreams(extended, standard, { recognizedFiles, ignoredFiles })
 
       setProgress(91)
       setStage("Building your listening story")
       await nextFrame()
-      const analysis = analyzeSpotifyStreams(merged)
+      analyzeSpotifyStreams(dataset)
 
       setProgress(100)
       setStage("Your dashboard is ready")
       await nextFrame()
-      onComplete(analysis)
+      onComplete(dataset)
     } catch (processingError) {
       const message = processingError instanceof Error
         ? processingError.message

@@ -110,7 +110,7 @@ const faqs = [
   {
     question: "Does my Spotify data get uploaded?",
     answer:
-      "No. JSON parsing and analysis happen inside this browser tab. There is no file-upload API, account connection, or server-side storage.",
+      "No. JSON parsing and analysis happen inside this browser tab. There is no file-upload API, account connection, or server-side storage. If you choose to play a track, your browser then connects directly to Spotify's official embedded player for that track.",
   },
   {
     question: "Which export should I use?",
@@ -146,6 +146,11 @@ const faqs = [
     question: "What happens to my Spotify stats when I refresh?",
     answer:
       "The selected files and generated dashboard stay in this browser tab's memory only. Refreshing or closing the tab clears them, so you can select the export again whenever you want to rebuild the analysis.",
+  },
+  {
+    question: "Can I preview tracks from my history?",
+    answer:
+      "Extended Streaming History includes Spotify Track URIs. When one is available, the dashboard can open Spotify's official player after you click Play. Playback length and availability depend on Spotify, your region, browser, and Spotify session. Standard history has no Track URI, so it uses a Spotify search link instead.",
   },
 ]
 
