@@ -85,7 +85,7 @@ export default function SpotifyInsightsExplorer({ analysis }: SpotifyInsightsExp
           <CardHeader className="pb-3">
             <CardTitle className="text-lg">Your week, hour by hour</CardTitle>
             <p className="text-sm leading-6 text-zinc-400">
-              Listening minutes across every weekday and hour in the selected period.
+              Each cell combines the same weekday and hour across the selected period.
             </p>
           </CardHeader>
           <CardContent>
@@ -110,6 +110,8 @@ export default function SpotifyInsightsExplorer({ analysis }: SpotifyInsightsExp
                           .map((item) => {
                             const intensity = item.minutes / maxHeatMinutes
                             const hourLabel = `${String(item.hour).padStart(2, "0")}:00`
+                            const nextHourLabel = `${String((item.hour + 1) % 24).padStart(2, "0")}:00`
+                            const timeRangeLabel = `${hourLabel}–${nextHourLabel}`
                             const playLabel = `${item.plays.toLocaleString()} qualified ${item.plays === 1 ? "play" : "plays"}`
                             return (
                               <Tooltip key={`${item.day}-${item.hour}`}>
@@ -120,7 +122,7 @@ export default function SpotifyInsightsExplorer({ analysis }: SpotifyInsightsExp
                                     style={{
                                       backgroundColor: `rgba(29, 185, 84, ${0.05 + intensity * 0.9})`,
                                     }}
-                                    aria-label={`${item.day} at ${hourLabel}: ${formatNumber(item.minutes)} listening minutes and ${playLabel}`}
+                                    aria-label={`All ${item.day}s from ${hourLabel} to ${nextHourLabel}: ${formatNumber(item.minutes)} listening minutes and ${playLabel}, aggregated across the selected period`}
                                   />
                                 </TooltipTrigger>
                                 <TooltipContent
@@ -128,10 +130,11 @@ export default function SpotifyInsightsExplorer({ analysis }: SpotifyInsightsExp
                                   sideOffset={8}
                                   className="border-white/10 bg-zinc-900 px-3 py-2 text-white shadow-xl shadow-black/40"
                                 >
-                                  <p className="text-xs font-semibold text-zinc-200">{item.day} · {hourLabel}</p>
+                                  <p className="text-xs font-semibold text-zinc-200">All {item.day}s · {timeRangeLabel}</p>
                                   <p className="mt-1 whitespace-nowrap text-xs text-zinc-400">
                                     <strong className="font-semibold text-white">{formatNumber(item.minutes)}</strong> listening minutes · {playLabel}
                                   </p>
+                                  <p className="mt-1 text-[11px] text-zinc-500">Aggregated across the selected period</p>
                                 </TooltipContent>
                               </Tooltip>
                             )

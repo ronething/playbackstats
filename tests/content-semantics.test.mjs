@@ -69,6 +69,8 @@ test("Spotify weekday heatmap exposes exact values on hover and keyboard focus",
   assert.match(spotifyInsightsExplorer, /listening minutes/)
   assert.match(spotifyInsightsExplorer, /qualified.*play/)
   assert.match(spotifyInsightsExplorer, /aria-label=/)
+  assert.match(spotifyInsightsExplorer, /All \{item\.day\}s/)
+  assert.match(spotifyInsightsExplorer, /Aggregated across the selected period/)
 })
 
 test("Sitemap uses stable page-specific modification dates", () => {
