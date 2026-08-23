@@ -31,6 +31,7 @@ import {
   WifiOff,
 } from "lucide-react"
 
+import SpotifyDnaCard from "@/components/spotify/spotify-dna-card"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { SpotifyAnalysis } from "@/lib/spotify-analysis"
@@ -496,6 +497,8 @@ export default function SpotifyDashboard({ analysis, onReset }: SpotifyDashboard
           )}
         </ChartCard>
       </section>
+
+      <SpotifyDnaCard analysis={analysis} />
 
       <section className="grid gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-5 text-sm text-zinc-400 sm:grid-cols-3">
         <div className="flex items-start gap-3">

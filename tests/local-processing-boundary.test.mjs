@@ -9,6 +9,7 @@ const localImportFiles = [
   "../lib/youtube-share-card.ts",
   "../components/spotify/spotify-upload.tsx",
   "../lib/spotify-analysis.ts",
+  "../lib/spotify-share-card.ts",
 ]
 
 test("history import and analysis paths contain no network transmission primitive", () => {
