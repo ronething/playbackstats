@@ -25,13 +25,11 @@ export default async function RootLayout({
     <html lang={locale}>
       <head>
         <Script
-          defer
-          data-domain="playbackstats.com"
-          src="https://plausible.vibecodinghub.org/js/script.file-downloads.outbound-links.js"
+          id="rybbit-analytics"
+          data-site-id="a53780efe09d"
+          src="https://r.analytic.app/api/script.js?siteId=a53780efe09d"
+          strategy="afterInteractive"
         />
-        <Script id="plausible-custom">
-          {`window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }`}
-        </Script>
       </head>
       <body>
         <a
